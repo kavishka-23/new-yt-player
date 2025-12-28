@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Class Viewer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex justify-center p-6">
+
+<div class="max-w-3xl w-full space-y-4">
+
+  <h1 class="text-2xl font-bold">Smart Class Viewer</h1>
+
+  <div class="flex gap-2">
+    <input id="ytUrl"
+           placeholder="Paste YouTube link"
+           class="flex-1 px-4 py-2 border rounded">
+    <button onclick="loadPlayer()"
+            class="px-4 py-2 bg-blue-600 text-white rounded">
+      Watch
+    </button>
+  </div>
+
+  <!-- PLAYER FRAME -->
+  <div id="playerContainer" class="hidden">
+    <iframe
+      id="playerFrame"
+      class="w-full h-[430px] rounded-lg shadow"
+      frameborder="0"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+</div>
+
+<script>
+function extractID(input) {
+  try {
+    const u = new URL(input);
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+    if (u.pathname.includes('/shorts/')) return u.pathname.split('/shorts/')[1];
+    if (u.pathname.includes('/embed/')) return u.pathname.split('/embed/')[1];
+    return u.searchParams.get('v');
+  } catch {
+    return null;
+  }
+}
+
+function loadPlayer() {
+  const url = document.getElementById('ytUrl').value;
+  const id = extractID(url);
+
+  if (!id || id.length !== 11) {
+    alert('Invalid YouTube URL');
+    return;
+  }
+
+  const frame = document.getElementById('playerFrame');
+  frame.src = `player/player.html?video=${id}`;
+  document.getElementById('playerContainer').classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
