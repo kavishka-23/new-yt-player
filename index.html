@@ -6,25 +6,23 @@
     <title>Smart Class Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom dark blue gradient background matching your theme */
         body {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         }
-        /* Smooth transition for the video frame loading */
         iframe {
             background-color: #000;
         }
     </style>
 </head>
-<body class="h-screen w-screen flex items-center justify-center p-4 overflow-hidden">
+<body class="h-screen w-screen flex items-center justify-center p-6 overflow-hidden">
 
-    <div class="w-full max-w-6xl h-full max-h-[92vh] bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-700/50 shadow-2xl flex flex-col p-6 box-border">
+    <div class="w-full max-w-[95vw] h-full max-h-[90vh] bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-700/50 shadow-2xl flex flex-col p-6 box-border">
         
-        <h1 class="text-center text-white text-2xl md:text-3xl font-bold tracking-wide mb-4">
+        <h1 class="text-center text-white text-2xl md:text-3xl font-bold tracking-wide mb-4 shrink-0">
             Smart Class Viewer
         </h1>
 
-        <div class="flex gap-3 mb-4 shrink-0">
+        <div class="flex gap-3 mb-5 shrink-0">
             <input 
                 type="text" 
                 id="videoUrl" 
@@ -65,7 +63,6 @@
 
             let videoId = '';
 
-            // Extract YouTube ID from various URL formats
             if (urlInput.includes('youtu.be/')) {
                 videoId = urlInput.split('youtu.be/')[1].split(/[?#]/)[0];
             } else if (urlInput.includes('youtube.com/watch')) {
@@ -76,14 +73,12 @@
             }
 
             if (videoId) {
-                // Update iframe source with embedded configuration
                 player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
             } else {
                 alert('Could not parse YouTube Video ID. Please check the URL format.');
             }
         }
 
-        // Allow pressing 'Enter' in the input box to trigger the video load
         document.getElementById('videoUrl').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 loadVideo();
