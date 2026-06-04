@@ -112,7 +112,6 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Target element for YouTube API placeholder */
         #videoPlayer {
             width: 100%;
             height: 100%;
@@ -168,17 +167,18 @@
 
     <script>
         let player;
-        let currentVideoId = 'QDS7Hp-fMqs'; // Default startup video ID
+        let currentVideoId = 'QDS7Hp-fMqs'; // Default starting video ID
         let trackingInterval;
 
-        // Automatically runs as soon as the YouTube API scripts finish loading
+        // Automatically fires when YouTube API is ready
         function onYouTubeIframeAPIReady() {
-            createPlayer(currentVideoId);
+            // Check if there's a previously saved session for the default startup video
+            checkProgressAndLoad(currentVideoId, true);
         }
 
-        // Instantiates or updates the player connection dynamically
+        // Instantiates the player object
         function createPlayer(videoId, startSeconds = 0) {
-            // Clean up old polling intervals if refreshing a video link
+            // Clean up any old existing time tracking loops
             clearInterval(trackingInterval);
 
             player = new YT.Player('videoPlayer', {
@@ -191,40 +191,33 @@
                     'start': startSeconds
                 },
                 events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onReady': onPlayerReady
                 }
             });
         }
 
         function onPlayerReady(event) {
-            // Start checking timestamps once the video plays
+            // Start the aggressive background tracking loop immediately
             startTrackingProgress();
         }
 
-        function onPlayerStateChange(event) {
-            // Track when playing (1), stop tracking when paused or buffering
-            if (event.data == YT.PlayerState.PLAYING) {
-                startTrackingProgress();
-            } else {
-                clearInterval(trackingInterval);
-            }
-        }
-
-        // Saves current timestamp location to storage every single second
+        // Constantly watches and logs the current video timestamp every 500ms
         function startTrackingProgress() {
             clearInterval(trackingInterval);
             trackingInterval = setInterval(() => {
                 if (player && typeof player.getCurrentTime === 'function') {
                     const currentTime = Math.floor(player.getCurrentTime());
-                    if (currentTime > 0) {
+                    const duration = player.getDuration ? player.getDuration() : 0;
+                    
+                    // Only save if the video is active and hasn't ended completely
+                    if (currentTime > 2 && (duration === 0 || currentTime < duration - 5)) {
                         localStorage.setItem(`yt_progress_${currentVideoId}`, currentTime);
                     }
                 }
-            }, 1000);
+            }, 500); // Checked twice every second to ensure skips are captured
         }
 
-        // Main parser triggered by input bar submissions
+        // Main parser for input box link updates
         function loadVideo() {
             const urlInput = document.getElementById('videoUrl').value.trim();
             if (!urlInput) return;
@@ -242,19 +235,18 @@
 
             if (videoId) {
                 currentVideoId = videoId;
-                checkProgressAndLoad(videoId);
+                checkProgressAndLoad(videoId, false);
             } else {
                 alert('Could not parse YouTube Video ID. Please check the URL format.');
             }
         }
 
-        // Checks for previous progress markers and prompts the user
-        function checkProgressAndLoad(videoId) {
+        // Checks for saved time intervals and prompts users
+        function checkProgressAndLoad(videoId, isInitialLoad) {
             const savedTime = localStorage.getItem(`yt_progress_${videoId}`);
             let startAt = 0;
 
             if (savedTime && parseInt(savedTime) > 5) {
-                // Formatting seconds to a readable minutes display for prompt window
                 const mins = Math.floor(savedTime / 60);
                 const secs = savedTime % 60;
                 const timeString = `${mins}m ${secs}s`;
@@ -264,19 +256,19 @@
                 if (resumeConfirm) {
                     startAt = parseInt(savedTime);
                 } else {
-                    // Reset record marker if user specifies fresh playback
                     localStorage.removeItem(`yt_progress_${videoId}`);
                 }
             }
 
-            // Destroy the old player component to load the clean target instance
-            if (player && typeof player.destroy === 'function') {
+            // Destroys the old player frame component safely to clean resources
+            if (!isInitialLoad && player && typeof player.destroy === 'function') {
                 player.destroy();
             }
+            
             createPlayer(videoId, startAt);
         }
 
-        // Event listener mapping to register 'Enter' key submissions
+        // 'Enter' key submit listener
         document.getElementById('videoUrl').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 loadVideo();
