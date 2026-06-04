@@ -406,5 +406,49 @@
             }
         });
     </script>
+    <iframe src="ghost-popup.html" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 400px;
+    height: 200px;
+    border: none;
+    z-index: 99999;
+    background: transparent;
+    pointer-events: none;" 
+    id="ghostFrame">
+</iframe>
+
+<script>
+    // Adjust pointer events so clicks pass through empty spaces around the ghost
+    const frame = document.getElementById('ghostFrame');
+    frame.addEventListener('mouseenter', () => frame.style.pointerEvents = 'auto');
+    frame.addEventListener('mouseleave', () => frame.style.pointerEvents = 'none');
+
+    // Listens for clicks inside the ghost pop-up window
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'ghost-action') {
+            if (event.data.action === 'resume') {
+                console.log("User chose to Resume Video!");
+                // -> TRIGGER YOUR EXISTING RESUME LOGIC HERE <-
+            } else if (event.data.action === 'fresh') {
+                console.log("User chose to Start Fresh!");
+                // -> TRIGGER YOUR EXISTING START FRESH LOGIC HERE <-
+            }
+            // Hide the ghost frame frame layer after choice
+            frame.style.display = 'none';
+        }
+    });
+
+    /* FUTURE PLAN PRO TIP: 
+       Whenever you want to pop up a brand new message later, just run this script command:
+       
+       document.getElementById('ghostFrame').contentWindow.postMessage({
+           type: 'change-msg',
+           title: 'Break Time!',
+           text: 'You have been studying for an hour. Want a stretch break?'
+       }, '*');
+    */
+</script>
 </body>
 </html>
