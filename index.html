@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Class Viewer</title>
     <style>
-        /* Global spacing reset */
+        /* Global Reset */
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +13,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Lock background viewport and cleanly center the application card */
+        /* Prevent scrollbars and center the application container */
         body {
             height: 100vh;
             width: 100vw;
@@ -25,31 +25,23 @@
             padding: 20px;
         }
 
-        /* Using CSS Grid with '1fr' ensures the video container adapts 
-          perfectly to the video's 16:9 widescreen ratio, eliminating 
-          the wide empty spaces on the sides.
-        */
+        /* 16:9 Grid Layout Container */
         .container {
             display: grid;
             grid-template-rows: auto 1fr;
             gap: 16px;
-            
-            /* Automatically matches screen size based on height constraint */
             height: 88vh;
             aspect-ratio: 16 / 9;
             max-width: 95vw;
-            
             background: rgba(15, 23, 42, 0.45);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            
             border: 1px solid rgba(168, 85, 247, 0.2);
             border-radius: 24px;
             padding: 24px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(168, 85, 247, 0.15);
         }
 
-        /* Header Layout Control */
         .header-bar {
             display: flex;
             justify-content: space-between;
@@ -110,7 +102,7 @@
             transform: translateY(-1px);
         }
 
-        /* Video Container: Fills out the grid completely edge-to-edge */
+        /* Video Frame Box */
         .video-wrapper {
             width: 100%;
             height: 100%;
@@ -120,14 +112,15 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        iframe {
+        /* Target element for YouTube API placeholder */
+        #videoPlayer {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
         }
 
-        /* Responsive Mobile Layout Override */
+        /* Mobile Layout */
         @media (max-width: 768px) {
             body {
                 overflow: auto;
@@ -166,22 +159,74 @@
         </div>
 
         <div class="video-wrapper">
-            <iframe 
-                id="videoPlayer"
-                src="https://www.youtube.com/embed/QDS7Hp-fMqs" 
-                title="YouTube video player" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-            </iframe>
+            <div id="videoPlayer"></div>
         </div>
 
     </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
+        let player;
+        let currentVideoId = 'QDS7Hp-fMqs'; // Default startup video ID
+        let trackingInterval;
+
+        // Automatically runs as soon as the YouTube API scripts finish loading
+        function onYouTubeIframeAPIReady() {
+            createPlayer(currentVideoId);
+        }
+
+        // Instantiates or updates the player connection dynamically
+        function createPlayer(videoId, startSeconds = 0) {
+            // Clean up old polling intervals if refreshing a video link
+            clearInterval(trackingInterval);
+
+            player = new YT.Player('videoPlayer', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 1,
+                    'playsinline': 1,
+                    'start': startSeconds
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Start checking timestamps once the video plays
+            startTrackingProgress();
+        }
+
+        function onPlayerStateChange(event) {
+            // Track when playing (1), stop tracking when paused or buffering
+            if (event.data == YT.PlayerState.PLAYING) {
+                startTrackingProgress();
+            } else {
+                clearInterval(trackingInterval);
+            }
+        }
+
+        // Saves current timestamp location to storage every single second
+        function startTrackingProgress() {
+            clearInterval(trackingInterval);
+            trackingInterval = setInterval(() => {
+                if (player && typeof player.getCurrentTime === 'function') {
+                    const currentTime = Math.floor(player.getCurrentTime());
+                    if (currentTime > 0) {
+                        localStorage.setItem(`yt_progress_${currentVideoId}`, currentTime);
+                    }
+                }
+            }, 1000);
+        }
+
+        // Main parser triggered by input bar submissions
         function loadVideo() {
             const urlInput = document.getElementById('videoUrl').value.trim();
-            const player = document.getElementById('videoPlayer');
-            
             if (!urlInput) return;
 
             let videoId = '';
@@ -196,12 +241,42 @@
             }
 
             if (videoId) {
-                player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                currentVideoId = videoId;
+                checkProgressAndLoad(videoId);
             } else {
                 alert('Could not parse YouTube Video ID. Please check the URL format.');
             }
         }
 
+        // Checks for previous progress markers and prompts the user
+        function checkProgressAndLoad(videoId) {
+            const savedTime = localStorage.getItem(`yt_progress_${videoId}`);
+            let startAt = 0;
+
+            if (savedTime && parseInt(savedTime) > 5) {
+                // Formatting seconds to a readable minutes display for prompt window
+                const mins = Math.floor(savedTime / 60);
+                const secs = savedTime % 60;
+                const timeString = `${mins}m ${secs}s`;
+
+                const resumeConfirm = confirm(`We found saved progress at ${timeString}. Do you want to resume where you left off?\n\n[OK] Resume Video\n[Cancel] Start from New`);
+                
+                if (resumeConfirm) {
+                    startAt = parseInt(savedTime);
+                } else {
+                    // Reset record marker if user specifies fresh playback
+                    localStorage.removeItem(`yt_progress_${videoId}`);
+                }
+            }
+
+            // Destroy the old player component to load the clean target instance
+            if (player && typeof player.destroy === 'function') {
+                player.destroy();
+            }
+            createPlayer(videoId, startAt);
+        }
+
+        // Event listener mapping to register 'Enter' key submissions
         document.getElementById('videoUrl').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 loadVideo();
