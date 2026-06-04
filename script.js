@@ -1,6 +1,6 @@
 document.getElementById('watchBtn').addEventListener('click', loadVideo);
 
-// Allow pressing "Enter" in the input box to load the video
+// Allow pressing "Enter" key in the text field to watch
 document.getElementById('videoUrl').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         loadVideo();
@@ -16,20 +16,19 @@ function loadVideo() {
     const iframe = document.getElementById('videoPlayer');
 
     if (videoId) {
-        // Construct the strict embed URL format YouTube expects
-        const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+        // Build the precise YouTube embed string
+        const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         
-        // Update player source and toggle visibility
         iframe.src = embedUrl;
-        placeholder.style.display = 'none';
+        placeholder.style.style.display = 'none';
         videoWrapper.style.display = 'block';
     } else {
-        alert('Please enter a valid YouTube link (e.g., https://www.youtube.com/watch?v=... or https://youtu.be/...)');
+        alert('Please enter a valid YouTube link (e.g., https://www.youtube.com/watch?v=...)');
     }
 }
 
 /**
- * Extracts the 11-character YouTube video ID from various URL formats
+ * Extracts the standard 11-digit YouTube video ID string
  */
 function extractYouTubeId(url) {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
