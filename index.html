@@ -13,74 +13,107 @@
         }
 
         body {
-            background-color: #f5f7fb;
-            color: #333;
+            /* Vibrant background gradient to make the glass effect stand out */
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #311042 100%);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 2rem;
         }
 
+        /* The Frosted Glass Container */
         .container {
             width: 100%;
-            max-width: 800px;
-            background: #ffffff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            max-width: 850px;
+            
+            /* Glassmorphism core properties */
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             margin-bottom: 1.5rem;
-            color: #1a1a1a;
+            color: #ffffff;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 1.5rem;
+            gap: 12px;
+            margin-bottom: 2rem;
         }
 
+        /* Glass Input Field */
         input {
             flex: 1;
-            padding: 0.75rem 1rem;
-            border: 1px solid #ccd1d9;
-            border-radius: 8px;
+            padding: 0.85rem 1.2rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             font-size: 1rem;
+            color: #ffffff;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         input:focus {
-            border-color: #2563eb;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
 
+        /* Glass Glow Button */
         button {
-            padding: 0.75rem 1.5rem;
-            background-color: #2563eb;
-            color: white;
+            padding: 0.85rem 1.8rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
         }
 
         button:hover {
-            background-color: #1d4ed8;
+            background: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
         }
 
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Video Box Styling */
         .video-container {
             position: relative;
             width: 100%;
             padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
             height: 0;
-            background-color: #000;
-            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 14px;
             overflow: hidden;
-            display: none; /* Hidden until a video is loaded */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         iframe {
@@ -92,12 +125,15 @@
             border: none;
         }
 
+        /* Glass Placeholder */
         .placeholder-text {
             text-align: center;
-            color: #65676b;
-            padding: 3rem 0;
-            border: 2px dashed #ccd1d9;
-            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 4rem 1rem;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            font-size: 1.05rem;
+            background: rgba(255, 255, 255, 0.02);
         }
     </style>
 </head>
