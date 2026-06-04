@@ -4,169 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Class Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
+        /* Custom dark blue gradient background matching your theme */
         body {
-            background: linear-gradient(135deg, #0f172a, #1e3a8a, #3b82f6);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         }
-
-        .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 20px 30px; /* Reduced vertical padding from top/bottom to cut the height */
-            width: 100%;
-            max-width: 1000px; /* Expanded container width to fit the larger video */
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        h1 {
-            color: #ffffff;
-            font-size: 2.2rem;
-            margin-bottom: 25px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .search-box {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        input {
-            flex: 1;
-            padding: 14px 20px;
-            border: none;
-            background: transparent;
-            color: #ffffff;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        button {
-            padding: 14px 28px;
-            border: none;
-            background: #ffffff;
-            color: #1e3a8a;
-            font-weight: 600;
-            font-size: 1rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
-        }
-
-        button:hover {
-            background: #f1f5f9;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(255,255,255,0.15);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        .video-container {
-            position: relative;
-            width: 100%;
-            max-width: 900px; /* Increased from 640px to grant much more space to the player */
-            margin: 0 auto;
-            aspect-ratio: 16 / 9;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: #000;
-        }
-
+        /* Smooth transition for the video frame loading */
         iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px 15px;
-            }
-            h1 {
-                font-size: 1.6rem;
-            }
-            .search-box {
-                flex-direction: column;
-                background: transparent;
-                border: none;
-                padding: 0;
-            }
-            input {
-                background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 12px;
-                margin-bottom: 10px;
-            }
-            button {
-                width: 100%;
-                border-radius: 12px;
-            }
+            background-color: #000;
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="h-screen w-screen flex items-center justify-center p-4 overflow-hidden">
 
-    <div class="container">
-        <h1>Smart Class Viewer</h1>
-        <div class="search-box">
-            <input type="text" id="youtubeUrl" placeholder="Paste YouTube Video URL here...">
-            <button onclick="loadVideo()">Watch</button>
+    <div class="w-full max-w-6xl h-full max-h-[92vh] bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-700/50 shadow-2xl flex flex-col p-6 box-border">
+        
+        <h1 class="text-center text-white text-2xl md:text-3xl font-bold tracking-wide mb-4">
+            Smart Class Viewer
+        </h1>
+
+        <div class="flex gap-3 mb-4 shrink-0">
+            <input 
+                type="text" 
+                id="videoUrl" 
+                placeholder="Paste YouTube Video URL here..." 
+                class="flex-1 bg-slate-800/80 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-500"
+            >
+            <button 
+                onclick="loadVideo()" 
+                class="bg-white text-slate-900 font-semibold px-6 py-3 rounded-xl hover:bg-slate-100 transition-all text-sm shadow-md shrink-0"
+            >
+                Watch
+            </button>
         </div>
-        <div class="video-container">
-            <iframe id="videoPlayer" src="https://www.youtube.com/embed/QDS7Hp-fMqs" allowfullscreen></iframe>
+
+        <div class="flex-1 w-full relative bg-black rounded-2xl overflow-hidden shadow-inner border border-slate-800">
+            <iframe 
+                id="videoPlayer"
+                class="absolute top-0 left-0 w-full h-full"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
         </div>
+
     </div>
 
     <script>
         function loadVideo() {
-            const urlInput = document.getElementById('youtubeUrl').value;
-            const videoPlayer = document.getElementById('videoPlayer');
+            const urlInput = document.getElementById('videoUrl').value.trim();
+            const player = document.getElementById('videoPlayer');
             
             if (!urlInput) {
-                alert('Please enter a YouTube URL');
+                alert('Please paste a valid YouTube URL first!');
                 return;
             }
 
             let videoId = '';
-            
-            // Handle various YouTube link formats
+
+            // Extract YouTube ID from various URL formats
             if (urlInput.includes('youtu.be/')) {
                 videoId = urlInput.split('youtu.be/')[1].split(/[?#]/)[0];
             } else if (urlInput.includes('youtube.com/watch')) {
@@ -177,14 +76,15 @@
             }
 
             if (videoId) {
-                videoPlayer.src = `https://www.youtube.com/embed/${videoId}`;
+                // Update iframe source with embedded configuration
+                player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
             } else {
-                alert('Invalid YouTube URL. Please check the link format.');
+                alert('Could not parse YouTube Video ID. Please check the URL format.');
             }
         }
 
-        // Allow pressing Enter key to load video
-        document.getElementById('youtubeUrl').addEventListener('keypress', function (e) {
+        // Allow pressing 'Enter' in the input box to trigger the video load
+        document.getElementById('videoUrl').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 loadVideo();
             }
