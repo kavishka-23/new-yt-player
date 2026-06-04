@@ -20,7 +20,7 @@ function loadVideo() {
         const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         
         iframe.src = embedUrl;
-        placeholder.style.style.display = 'none';
+        placeholder.style.display = 'none'; // Fixed the typo here!
         videoWrapper.style.display = 'block';
     } else {
         alert('Please enter a valid YouTube link (e.g., https://www.youtube.com/watch?v=...)');
