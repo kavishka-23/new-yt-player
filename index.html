@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Class Viewer</title>
     <style>
-        /* Global spacing resets */
+        /* Global Reset */
         * {
             margin: 0;
             padding: 0;
@@ -280,29 +280,9 @@
     <script>
         let player;
         let currentVideoId = 'QDS7Hp-fMqs'; // Initial default placeholder video ID
-        let cookieInterval;
+        let trackingInterval;
         let pendingVideoId = '';
         let pendingIsInitialLoad = false;
-
-        // --- Core Cookie Logic Engines ---
-
-        function setCookie(name, value) {
-            const date = new Date();
-            date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 Day lifespan
-            const expires = "; expires=" + date.toUTCString();
-            document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
-        }
-
-        function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
 
         // Standard callback fired immediately when the remote YouTube engine starts up
         function onYouTubeIframeAPIReady() {
@@ -311,7 +291,7 @@
 
         // Instantiates or reinstantiates a clean player tracking system
         function createPlayer(videoId, startSeconds = 0) {
-            clearInterval(cookieInterval);
+            clearInterval(trackingInterval);
 
             player = new YT.Player('videoPlayer', {
                 height: '100%',
@@ -329,23 +309,28 @@
         }
 
         function onPlayerReady(event) {
-            startCookieTracking();
+            startTracking();
         }
 
-        // Aggressively monitors current timestamps and writes directly to cookies every 500ms
-        function startCookieTracking() {
-            clearInterval(cookieInterval);
-            cookieInterval = setInterval(() => {
-                if (player && typeof player.getCurrentTime === 'function') {
-                    const currentTime = Math.floor(player.getCurrentTime());
-                    const duration = player.getDuration ? player.getDuration() : 0;
-                    
-                    if (currentTime > 2 && (duration === 0 || currentTime < duration - 5)) {
-                        setCookie(`yt_cookie_${currentVideoId}`, currentTime);
-                    }
-                }
-            }, 500); 
+        // Saves current timestamp location to localStorage every 500ms
+        function startTracking() {
+            clearInterval(trackingInterval);
+            trackingInterval = setInterval(saveCurrentProgress, 500);
         }
+
+        function saveCurrentProgress() {
+            if (player && typeof player.getCurrentTime === 'function') {
+                const currentTime = Math.floor(player.getCurrentTime());
+                const duration = player.getDuration ? player.getDuration() : 0;
+                
+                if (currentTime > 2 && (duration === 0 || currentTime < duration - 5)) {
+                    localStorage.setItem(`yt_progress_${currentVideoId}`, currentTime);
+                }
+            }
+        }
+
+        // Forcefully save the exact timestamp right before the browser page unloads or refreshes
+        window.addEventListener('beforeunload', saveCurrentProgress);
 
         // URL Formatter parser
         function loadVideo() {
@@ -364,6 +349,8 @@
             }
 
             if (videoId) {
+                // Save progress of the old video before switching over to the new one
+                saveCurrentProgress();
                 currentVideoId = videoId;
                 checkProgressAndLoad(videoId, false);
             } else {
@@ -371,23 +358,21 @@
             }
         }
 
-        // Decides timeline placement based on cookie availability 
+        // Decides timeline placement based on data availability
         function checkProgressAndLoad(videoId, isInitialLoad) {
-            const savedTime = getCookie(`yt_cookie_${videoId}`);
+            const savedTime = localStorage.getItem(`yt_progress_${videoId}`);
 
             if (savedTime && parseInt(savedTime) > 5) {
                 const mins = Math.floor(savedTime / 60);
                 const secs = savedTime % 60;
                 
-                // Store parameters globally so the modal handles completion execution safely
                 pendingVideoId = videoId;
                 pendingIsInitialLoad = isInitialLoad;
 
-                // Open our custom stylized glass card window layout instead of old browser blocks
+                // Open custom glass modal window layout
                 document.getElementById('savedTimeLabel').innerText = `${mins}m ${secs}s`;
                 document.getElementById('customModal').classList.add('active');
             } else {
-                // Play straight away if no tracking cookie is found
                 executePlayerInit(videoId, 0, isInitialLoad);
             }
         }
@@ -403,13 +388,13 @@
         // --- Custom Modal Button Action Observers ---
 
         document.getElementById('btnResume').addEventListener('click', () => {
-            const savedTime = getCookie(`yt_cookie_${pendingVideoId}`);
+            const savedTime = localStorage.getItem(`yt_progress_${pendingVideoId}`);
             document.getElementById('customModal').classList.remove('active');
             executePlayerInit(pendingVideoId, parseInt(savedTime || 0), pendingIsInitialLoad);
         });
 
         document.getElementById('btnNew').addEventListener('click', () => {
-            setCookie(`yt_cookie_${pendingVideoId}`, "", -1); // Clear past reference marker
+            localStorage.removeItem(`yt_progress_${pendingVideoId}`);
             document.getElementById('customModal').classList.remove('active');
             executePlayerInit(pendingVideoId, 0, pendingIsInitialLoad);
         });
