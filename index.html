@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Class Viewer</title>
     <style>
-        /* Reset margins and force the page to perfectly match the browser window size */
+        /* Global Reset */
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +13,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Centers the container on the screen and removes any scrollbars */
+        /* Center content and completely hide browser scrollbars */
         body {
             height: 100vh;
             width: 100vw;
@@ -22,18 +22,18 @@
             justify-content: center;
             background: radial-gradient(circle at top left, #1a103c 0%, #0b0f19 60%, #250945 100%);
             overflow: hidden;
-            padding: 24px;
+            padding: 20px;
         }
 
-        /* The Magic Layout:
-          Forces the container to take up exactly 85% of your screen height, 
-          and uses aspect-ratio to mathematically calculate the perfect matching width.
-          This completely eliminates the giant black bars on the sides!
+        /* Width-Optimized Container:
+          Takes up 95% of your screen width first, then uses aspect-ratio 
+          to automatically scale the height to fit the video shape cleanly.
         */
         .container {
-            height: 85vh; 
+            width: 95vw; 
+            max-width: 1400px;
             aspect-ratio: 16 / 9; 
-            max-width: 95vw; 
+            max-height: 85vh; /* Safety barrier to prevent hitting the bottom taskbar */
             
             background: rgba(15, 23, 42, 0.45);
             backdrop-filter: blur(16px);
@@ -48,7 +48,7 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(168, 85, 247, 0.15);
         }
 
-        /* Keeps the top header content horizontally aligned without squeezing */
+        /* Header Layout Control */
         .header-bar {
             display: flex;
             justify-content: space-between;
@@ -110,7 +110,7 @@
             transform: translateY(-1px);
         }
 
-        /* Fills all remaining space in the container with the video player area */
+        /* Video Frame Wrapper */
         .video-wrapper {
             flex-grow: 1;
             width: 100%;
@@ -130,7 +130,7 @@
             border: none;
         }
 
-        /* Seamless layout adjustment for mobile phones */
+        /* Mobile Layout */
         @media (max-width: 640px) {
             body {
                 overflow: auto;
