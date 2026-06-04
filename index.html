@@ -5,134 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Class Viewer</title>
     <style>
-        /* --- CUSTOM GLASS SCROLLBAR --- */
-        /* For Chrome, Safari, and Edge */
-        ::-webkit-scrollbar {
-            width: 10px;
-            background: transparent; /* Makes the scrollbar track invisible */
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15); /* Match the glass border tint */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 10px;
-            border: 2px solid transparent; /* Gives it spacing from the window edge */
-            background-clip: padding-box;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3); /* Brightens up slightly when hovered */
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-
-        /* For Firefox */
         * {
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-        }
-
-        /* --- REST OF THE CODE --- */
-        * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #311042 100%);
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #3b82f6);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 2rem;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
-        /* The Frosted Glass Container */
         .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 20px 30px; /* Reduced vertical padding from top/bottom to cut the height */
             width: 100%;
-            max-width: 850px;
-            background: rgba(255, 255, 255, 0.08); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            max-width: 1000px; /* Expanded container width to fit the larger video */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
         }
 
         h1 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
             color: #ffffff;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        .input-group {
+        .search-box {
             display: flex;
             gap: 12px;
-            margin-bottom: 2rem;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Glass Input Field */
         input {
             flex: 1;
-            padding: 0.85rem 1.2rem;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
             color: #ffffff;
+            font-size: 1rem;
             outline: none;
-            transition: all 0.3s ease;
         }
 
         input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.4);
         }
 
-        input:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-        }
-
-        /* Glass Glow Button */
         button {
-            padding: 0.85rem 1.8rem;
-            background: rgba(255, 255, 255, 0.9);
-            color: #0f172a;
+            padding: 14px 28px;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            cursor: pointer;
+            background: #ffffff;
+            color: #1e3a8a;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
         }
 
         button:hover {
-            background: #ffffff;
+            background: #f1f5f9;
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.15);
         }
 
-        /* Video Box Styling */
+        button:active {
+            transform: translateY(1px);
+        }
+
         .video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; 
-            height: 0;
-            background-color: rgba(0, 0, 0, 0.4);
-            border-radius: 14px;
+            max-width: 900px; /* Increased from 640px to grant much more space to the player */
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #000;
         }
 
         iframe {
@@ -144,37 +114,81 @@
             border: none;
         }
 
-        /* Glass Placeholder */
-        .placeholder-text {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-            padding: 4rem 1rem;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 14px;
-            font-size: 1.05rem;
-            background: rgba(255, 255, 255, 0.02);
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .search-box {
+                flex-direction: column;
+                background: transparent;
+                border: none;
+                padding: 0;
+            }
+            input {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                margin-bottom: 10px;
+            }
+            button {
+                width: 100%;
+                border-radius: 12px;
+            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="container">
         <h1>Smart Class Viewer</h1>
-        
-        <div class="input-group">
-            <input type="text" id="videoUrl" placeholder="Paste YouTube video link here...">
-            <button id="watchBtn">Watch</button>
+        <div class="search-box">
+            <input type="text" id="youtubeUrl" placeholder="Paste YouTube Video URL here...">
+            <button onclick="loadVideo()">Watch</button>
         </div>
-
-        <div id="placeholder" class="placeholder-text">
-            Enter a valid YouTube link above to start watching.
-        </div>
-
-        <div id="videoWrapper" class="video-container">
-            <iframe id="videoPlayer" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+        <div class="video-container">
+            <iframe id="videoPlayer" src="https://www.youtube.com/embed/QDS7Hp-fMqs" allowfullscreen></iframe>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        function loadVideo() {
+            const urlInput = document.getElementById('youtubeUrl').value;
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            if (!urlInput) {
+                alert('Please enter a YouTube URL');
+                return;
+            }
+
+            let videoId = '';
+            
+            // Handle various YouTube link formats
+            if (urlInput.includes('youtu.be/')) {
+                videoId = urlInput.split('youtu.be/')[1].split(/[?#]/)[0];
+            } else if (urlInput.includes('youtube.com/watch')) {
+                const urlParams = new URLSearchParams(new URL(urlInput).search);
+                videoId = urlParams.get('v');
+            } else if (urlInput.includes('youtube.com/embed/')) {
+                videoId = urlInput.split('youtube.com/embed/')[1].split(/[?#]/)[0];
+            }
+
+            if (videoId) {
+                videoPlayer.src = `https://www.youtube.com/embed/${videoId}`;
+            } else {
+                alert('Invalid YouTube URL. Please check the link format.');
+            }
+        }
+
+        // Allow pressing Enter key to load video
+        document.getElementById('youtubeUrl').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                loadVideo();
+            }
+        });
+    </script>
 </body>
 </html>
