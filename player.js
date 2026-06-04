@@ -1,25 +1,55 @@
-// Get the URL from your input field
-const videoUrl = document.getElementById('urlInput').value; 
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Grab your HTML elements
+    const urlInput = document.querySelector("input[type='text']");
+    const watchButton = document.querySelector("button");
+    const videoIframe = document.querySelector("iframe");
 
-try {
-    const urlObj = new URL(videoUrl);
-    let videoId = '';
+    // 2. Define the player updater logic
+    function updateVideoPlayer() {
+        const videoUrl = urlInput.value.trim();
 
-    // Check if it's a standard youtube.com watch link
-    if (urlObj.hostname.includes('youtube.com')) {
-        videoId = urlObj.searchParams.get('v');
-    } 
-    // Check if it's a shortened youtu.be link
-    else if (urlObj.hostname.includes('youtu.be')) {
-        videoId = urlObj.pathname.substring(1);
+        if (!videoUrl) {
+            alert("Please paste a YouTube URL first!");
+            return;
+        }
+
+        try {
+            let videoId = '';
+            const urlObj = new URL(videoUrl);
+
+            // Handle standard youtube.com watch links (?v=...)
+            if (urlObj.hostname.includes('youtube.com')) {
+                if (urlObj.pathname.includes('/shorts/')) {
+                    // Handle YouTube Shorts
+                    videoId = urlObj.pathname.split('/shorts/')[1].split(/[?#]/)[0];
+                } else {
+                    videoId = urlObj.searchParams.get('v');
+                }
+            } 
+            // Handle shortened youtu.be mobile links
+            else if (urlObj.hostname.includes('youtu.be')) {
+                videoId = urlObj.pathname.substring(1).split(/[?#]/)[0];
+            }
+
+            // 3. If we found an ID, update the iframe src using /embed/
+            if (videoId) {
+                videoIframe.src = `https://www.youtube.com/embed/${videoId}`;
+            } else {
+                alert("Could not extract a valid video ID. Make sure it's a valid YouTube link.");
+            }
+
+        } catch (error) {
+            alert("Please enter a valid web address (URL).");
+        }
     }
 
-    if (videoId) {
-        // Update your iframe source with the correct embed path
-        document.getElementById('yourIframeId').src = `https://www.youtube.com/embed/${videoId}`;
-    } else {
-        alert("Please enter a valid YouTube URL.");
-    }
-} catch (error) {
-    alert("Please enter a valid URL website address.");
-}
+    // 4. Trigger when clicking the "Watch" button
+    watchButton.addEventListener("click", updateVideoPlayer);
+
+    // 5. OPTIONAL: Trigger when pressing the "Enter" key inside the input box
+    urlInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+            updateVideoPlayer();
+        }
+    });
+});
