@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            display: flex;
+            align-items: flex-end;
+            height: 100vh;
+        }
+
+        /* The overall notification layout pinned down-left */
+        .ghost-notification-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: #161224;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 16px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin: 20px;
+            max-width: 360px;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Cute CSS Floating Ghost */
+        .ghost-character {
+            position: relative;
+            width: 40px;
+            height: 55px;
+            background: #ffffff;
+            border-radius: 20px 20px 0 0;
+            animation: float 2s ease-in-out infinite;
+            flex-shrink: 0;
+            box-shadow: 0 8px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .ghost-face {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            width: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .eye {
+            width: 4.5px;
+            height: 4.5px;
+            background-color: #161224;
+            border-radius: 50%;
+        }
+
+        .smile {
+            position: absolute;
+            bottom: -3px;
+            left: 5px;
+            width: 8px;
+            height: 4px;
+            border-bottom: 2px solid #161224;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .blush {
+            position: absolute;
+            top: 24px;
+            width: 4px;
+            height: 3px;
+            background-color: #ff94b8;
+            border-radius: 50%;
+        }
+        .blush.left { left: 5px; }
+        .blush.right { right: 5px; }
+
+        .ghost-bottom {
+            position: absolute;
+            bottom: -7px;
+            left: 0;
+            width: 100%;
+            display: flex;
+        }
+
+        .wave {
+            flex: 1;
+            height: 8px;
+            background: #ffffff;
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* Message Area Text & Buttons */
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message-content p {
+            color: #a5a1b8;
+            font-size: 13.5px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .message-content strong {
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .highlight {
+            color: #7c4dff;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-yes {
+            background-color: #7c4dff;
+            color: white;
+        }
+        .btn-yes:hover { background-color: #8c61ff; }
+
+        .btn-no {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #a5a1b8;
+        }
+        .btn-no:hover { background-color: rgba(255, 255, 255, 0.1); color: white; }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ghost-notification-box" id="popupBox">
+        <div class="ghost-character">
+            <div class="ghost-face">
+                <div class="eye"></div>
+                <div class="eye"></div>
+                <div class="smile"></div>
+            </div>
+            <div class="blush left"></div>
+            <div class="blush right"></div>
+            <div class="ghost-bottom">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+            </div>
+        </div>
+
+        <div class="message-content">
+            <p><strong id="popupTitle">Welcome Back!</strong></p>
+            <p id="popupText">I found your saved progress at <span class="highlight">62m 52s</span>. Resume?</p>
+            <div class="actions">
+                <button class="btn btn-yes" onclick="sendAction('resume')">Resume</button>
+                <button class="btn btn-no" onclick="sendAction('fresh')">Start Fresh</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Communicates clicks back to your main window script securely
+        function sendAction(actionType) {
+            window.parent.postMessage({ type: 'ghost-action', action: actionType }, '*');
+            document.getElementById('popupBox').style.opacity = '0'; // Hide pop up smoothly
+        }
+
+        // Future Plan Feature: You can call this function from your index.html to change messages!
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'change-msg') {
+                document.getElementById('popupTitle').innerText = event.data.title;
+                document.getElementById('popupText').innerHTML = event.data.text;
+                document.getElementById('popupBox').style.opacity = '1';
+            }
+        });
+    </script>
+</body>
+</html>
