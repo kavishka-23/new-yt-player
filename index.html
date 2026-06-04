@@ -6,42 +6,45 @@
     <title>Smart Class Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Rich, cinematic cosmic gradient for a high-end streaming vibe */
         body {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 50%, #2e1065 100%);
         }
         iframe {
             background-color: #000;
         }
     </style>
 </head>
-<body class="h-screen w-screen flex items-center justify-center p-6 overflow-hidden">
+<body class="h-screen w-screen flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden select-none">
 
-    <div class="w-full max-w-[95vw] h-full max-h-[90vh] bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-700/50 shadow-2xl flex flex-col p-6 box-border">
+    <div class="w-full max-w-[95vw] h-auto max-h-[85vh] aspect-[16/9] bg-slate-950/40 backdrop-blur-xl rounded-3xl border border-purple-500/10 shadow-[0_0_50px_-12px_rgba(168,85,247,0.2)] flex flex-col p-5 box-border transition-all duration-300">
         
-        <h1 class="text-center text-white text-2xl md:text-3xl font-bold tracking-wide mb-4 shrink-0">
-            Smart Class Viewer
-        </h1>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 shrink-0">
+            <h1 class="text-xl md:text-2xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-purple-400 bg-clip-text text-transparent">
+                Smart Class Viewer
+            </h1>
 
-        <div class="flex gap-3 mb-5 shrink-0">
-            <input 
-                type="text" 
-                id="videoUrl" 
-                placeholder="Paste YouTube Video URL here..." 
-                class="flex-1 bg-slate-800/80 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-500"
-            >
-            <button 
-                onclick="loadVideo()" 
-                class="bg-white text-slate-900 font-semibold px-6 py-3 rounded-xl hover:bg-slate-100 transition-all text-sm shadow-md shrink-0"
-            >
-                Watch
-            </button>
+            <div class="flex w-full sm:w-auto flex-1 max-w-xl gap-2">
+                <input 
+                    type="text" 
+                    id="videoUrl" 
+                    placeholder="Paste YouTube Video URL here..." 
+                    class="w-full bg-slate-900/80 border border-slate-700/60 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-slate-500"
+                >
+                <button 
+                    onclick="loadVideo()" 
+                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium px-5 py-2.5 rounded-xl hover:from-purple-500 hover:to-indigo-500 transition-all text-sm shadow-lg shadow-purple-900/20 active:scale-95 shrink-0"
+                >
+                    Watch
+                </button>
+            </div>
         </div>
 
-        <div class="flex-1 w-full relative bg-black rounded-2xl overflow-hidden shadow-inner border border-slate-800">
+        <div class="flex-1 w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-slate-800/80 relative">
             <iframe 
                 id="videoPlayer"
-                class="absolute top-0 left-0 w-full h-full"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                class="absolute top-0 left-0 w-full h-full object-cover"
+                src="https://www.youtube.com/embed/QDS7Hp-fMqs" 
                 title="YouTube video player" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -56,10 +59,7 @@
             const urlInput = document.getElementById('videoUrl').value.trim();
             const player = document.getElementById('videoPlayer');
             
-            if (!urlInput) {
-                alert('Please paste a valid YouTube URL first!');
-                return;
-            }
+            if (!urlInput) return;
 
             let videoId = '';
 
