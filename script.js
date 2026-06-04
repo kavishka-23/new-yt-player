@@ -20,8 +20,11 @@ function loadVideo() {
         const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         
         iframe.src = embedUrl;
-        placeholder.style.display = 'none'; // Fixed: removed the double .style!
-        videoWrapper.style.display = 'block'; // This will now successfully run and show the video!
+        placeholder.style.display = 'none'; 
+        
+        // Displays the player box and forces it to keep its width dimensions
+        videoWrapper.style.display = 'block'; 
+        videoWrapper.style.width = '100%';
     } else {
         alert('Please enter a valid YouTube link (e.g., https://www.youtube.com/watch?v=...)');
     }
