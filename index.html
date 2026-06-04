@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Class Viewer</title>
     <style>
+        /* --- CUSTOM GLASS SCROLLBAR --- */
+        /* For Chrome, Safari, and Edge */
+        ::-webkit-scrollbar {
+            width: 10px;
+            background: transparent; /* Makes the scrollbar track invisible */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15); /* Match the glass border tint */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 10px;
+            border: 2px solid transparent; /* Gives it spacing from the window edge */
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3); /* Brightens up slightly when hovered */
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        /* For Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        }
+
+        /* --- REST OF THE CODE --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -92,17 +121,17 @@
             box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
         }
 
-        /* Video Box Styling - Bulletproof Responsive Aspect Ratio */
+        /* Video Box Styling */
         .video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Widescreen Aspect Ratio */
+            padding-bottom: 56.25%; 
             height: 0;
             background-color: rgba(0, 0, 0, 0.4);
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none; /* Hidden on load */
+            display: none; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
@@ -144,3 +173,8 @@
         <div id="videoWrapper" class="video-container">
             <iframe id="videoPlayer" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
         </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
