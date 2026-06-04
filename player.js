@@ -1,55 +1,55 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Grab your HTML elements
-    const urlInput = document.querySelector("input[type='text']");
+    // 1. Automatically grab the input, button, and iframe elements from your HTML
+    const urlInput = document.querySelector("input");
     const watchButton = document.querySelector("button");
     const videoIframe = document.querySelector("iframe");
 
-    // 2. Define the player updater logic
-    function updateVideoPlayer() {
+    function loadYouTubeVideo() {
         const videoUrl = urlInput.value.trim();
 
         if (!videoUrl) {
-            alert("Please paste a YouTube URL first!");
+            alert("Please paste a YouTube link first!");
             return;
         }
 
         try {
             let videoId = '';
-            const urlObj = new URL(videoUrl);
-
-            // Handle standard youtube.com watch links (?v=...)
-            if (urlObj.hostname.includes('youtube.com')) {
-                if (urlObj.pathname.includes('/shorts/')) {
-                    // Handle YouTube Shorts
-                    videoId = urlObj.pathname.split('/shorts/')[1].split(/[?#]/)[0];
-                } else {
-                    videoId = urlObj.searchParams.get('v');
-                }
+            
+            // Extract ID from mobile links (https://youtu.be/r9_mme_Vtv0...)
+            if (videoUrl.includes('youtu.be/')) {
+                videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
             } 
-            // Handle shortened youtu.be mobile links
-            else if (urlObj.hostname.includes('youtu.be')) {
-                videoId = urlObj.pathname.substring(1).split(/[?#]/)[0];
+            // Extract ID from standard desktop links (https://www.youtube.com/watch?v=...)
+            else if (videoUrl.includes('v=')) {
+                videoId = videoUrl.split('v=')[1].split('&')[0];
+            }
+            // Extract ID from YouTube Shorts
+            else if (videoUrl.includes('/shorts/')) {
+                videoId = videoUrl.split('/shorts/')[1].split('?')[0];
             }
 
-            // 3. If we found an ID, update the iframe src using /embed/
             if (videoId) {
+                // Change the source to the correct embed URL format
                 videoIframe.src = `https://www.youtube.com/embed/${videoId}`;
             } else {
-                alert("Could not extract a valid video ID. Make sure it's a valid YouTube link.");
+                alert("Could not parse the YouTube ID. Please check the URL.");
             }
-
-        } catch (error) {
-            alert("Please enter a valid web address (URL).");
+        } catch (e) {
+            alert("An error occurred trying to read the link.");
         }
     }
 
-    // 4. Trigger when clicking the "Watch" button
-    watchButton.addEventListener("click", updateVideoPlayer);
+    // Run when clicking the "Watch" button
+    if (watchButton) {
+        watchButton.addEventListener("click", loadYouTubeVideo);
+    }
 
-    // 5. OPTIONAL: Trigger when pressing the "Enter" key inside the input box
-    urlInput.addEventListener("keypress", (event) => {
-        if (event.key === "Enter") {
-            updateVideoPlayer();
-        }
-    });
+    // Run when hitting "Enter" on the keyboard inside the input field
+    if (urlInput) {
+        urlInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                loadYouTubeVideo();
+            }
+        });
+    }
 });
