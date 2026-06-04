@@ -20,11 +20,10 @@ function loadVideo() {
         const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         
         iframe.src = embedUrl;
-        placeholder.style.display = 'none'; 
         
-        // Displays the player box and forces it to keep its width dimensions
+        // FIX: Removed the duplicate style method call
+        placeholder.style.display = 'none'; 
         videoWrapper.style.display = 'block'; 
-        videoWrapper.style.width = '100%';
     } else {
         alert('Please enter a valid YouTube link (e.g., https://www.youtube.com/watch?v=...)');
     }
