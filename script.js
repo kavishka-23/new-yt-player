@@ -17,7 +17,7 @@ function loadVideo() {
 
     if (videoId) {
         // Construct the strict embed URL format YouTube expects
-        const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
         
         // Update player source and toggle visibility
         iframe.src = embedUrl;
