@@ -13,52 +13,59 @@
         }
 
         body {
-            /* Vibrant background gradient to make the glass effect stand out */
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #311042 100%);
-            min-height: 100vh;
+            /* Using dynamic viewport height to lock things vertically */
+            height: 100vh;
+            height: 100dvh; 
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 1rem;
+            overflow: hidden; /* Prevents outer page scrolling entirely */
         }
 
         /* The Frosted Glass Container */
         .container {
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
+            /* Prevents container from ever growing taller than the screen */
+            max-height: 95vh; 
             
-            /* Glassmorphism core properties */
             background: rgba(255, 255, 255, 0.08); 
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             
-            padding: 2.5rem;
+            padding: 1.5rem;
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            
+            /* Turns container into a flex column to handle its children sizes dynamically */
+            display: flex;
+            flex-direction: column;
         }
 
         h1 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
             color: #ffffff;
             font-weight: 700;
             text-align: center;
-            letter-spacing: -0.5px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex-shrink: 0; /* Prevents heading from shrinking */
         }
 
         .input-group {
             display: flex;
             gap: 12px;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0; /* Prevents inputs from squeezing */
         }
 
         /* Glass Input Field */
         input {
             flex: 1;
-            padding: 0.85rem 1.2rem;
+            padding: 0.75rem 1rem;
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
@@ -80,7 +87,7 @@
 
         /* Glass Glow Button */
         button {
-            padding: 0.85rem 1.8rem;
+            padding: 0.75rem 1.5rem;
             background: rgba(255, 255, 255, 0.9);
             color: #0f172a;
             border: none;
@@ -98,28 +105,24 @@
             box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
         }
 
-        button:active {
-            transform: translateY(1px);
-        }
-
-        /* Video Box Styling */
+        /* Video Box Aspect-Ratio Scaling */
         .video-container {
-            position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
+            /* Modern approach replaces bottom padding trick */
+            aspect-ratio: 16 / 9; 
             background-color: rgba(0, 0, 0, 0.4);
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: none; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            
+            /* Tells browser to scale down automatically based on parent height limit */
+            max-height: calc(95vh - 120px); 
+            margin: 0 auto;
         }
 
         iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             border: none;
