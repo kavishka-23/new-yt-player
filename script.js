@@ -20,8 +20,8 @@ function loadVideo() {
         const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         
         iframe.src = embedUrl;
-        placeholder.style.display = 'none'; // Fixed the typo here!
-        videoWrapper.style.display = 'block';
+        placeholder.style.display = 'none'; // Fixed: removed the double .style!
+        videoWrapper.style.display = 'block'; // This will now successfully run and show the video!
     } else {
         alert('Please enter a valid YouTube link (e.g., https://www.youtube.com/watch?v=...)');
     }
