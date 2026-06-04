@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Class Viewer</title>
     <style>
-        /* Global Reset */
+        /* Global spacing resets */
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +13,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Prevent scrollbars and center the application container */
+        /* Center application card and remove default window scrollbars */
         body {
             height: 100vh;
             width: 100vw;
@@ -25,7 +25,7 @@
             padding: 20px;
         }
 
-        /* 16:9 Grid Layout Container */
+        /* Responsive 16:9 Grid Layout Container */
         .container {
             display: grid;
             grid-template-rows: auto 1fr;
@@ -42,6 +42,7 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(168, 85, 247, 0.15);
         }
 
+        /* Top header elements control bar */
         .header-bar {
             display: flex;
             justify-content: space-between;
@@ -102,7 +103,7 @@
             transform: translateY(-1px);
         }
 
-        /* Video Frame Box */
+        /* Outer container frame for the video element */
         .video-wrapper {
             width: 100%;
             height: 100%;
@@ -119,7 +120,7 @@
             display: block;
         }
 
-        /* Mobile Layout */
+        /* Mobile Responsive Adjustments */
         @media (max-width: 768px) {
             body {
                 overflow: auto;
@@ -167,19 +168,39 @@
 
     <script>
         let player;
-        let currentVideoId = 'QDS7Hp-fMqs'; // Default starting video ID
-        let trackingInterval;
+        let currentVideoId = 'QDS7Hp-fMqs'; // Initial default placeholder video ID
+        let cookieInterval;
 
-        // Automatically fires when YouTube API is ready
+        // --- Core Cookie Logic Engines ---
+
+        // Sets a cookie variable that safely expires in 30 days
+        function setCookie(name, value) {
+            const date = new Date();
+            date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 Day lifespan
+            const expires = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+        }
+
+        // Reads and extracts custom target parameters out of the cookie document string
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // Standard callback fired immediately when the remote YouTube engine starts up
         function onYouTubeIframeAPIReady() {
-            // Check if there's a previously saved session for the default startup video
             checkProgressAndLoad(currentVideoId, true);
         }
 
-        // Instantiates the player object
+        // Instantiates or reinstantiates a clean player tracking system
         function createPlayer(videoId, startSeconds = 0) {
-            // Clean up any old existing time tracking loops
-            clearInterval(trackingInterval);
+            clearInterval(cookieInterval);
 
             player = new YT.Player('videoPlayer', {
                 height: '100%',
@@ -197,27 +218,26 @@
         }
 
         function onPlayerReady(event) {
-            // Start the aggressive background tracking loop immediately
-            startTrackingProgress();
+            startCookieTracking();
         }
 
-        // Constantly watches and logs the current video timestamp every 500ms
-        function startTrackingProgress() {
-            clearInterval(trackingInterval);
-            trackingInterval = setInterval(() => {
+        // Aggressively monitors current timestamps and writes directly to cookies every 500ms
+        function startCookieTracking() {
+            clearInterval(cookieInterval);
+            cookieInterval = setInterval(() => {
                 if (player && typeof player.getCurrentTime === 'function') {
                     const currentTime = Math.floor(player.getCurrentTime());
                     const duration = player.getDuration ? player.getDuration() : 0;
                     
-                    // Only save if the video is active and hasn't ended completely
+                    // Verify the track is active and has not naturally finished playing
                     if (currentTime > 2 && (duration === 0 || currentTime < duration - 5)) {
-                        localStorage.setItem(`yt_progress_${currentVideoId}`, currentTime);
+                        setCookie(`yt_cookie_${currentVideoId}`, currentTime);
                     }
                 }
-            }, 500); // Checked twice every second to ensure skips are captured
+            }, 500); 
         }
 
-        // Main parser for input box link updates
+        // URL Formatter parser
         function loadVideo() {
             const urlInput = document.getElementById('videoUrl').value.trim();
             if (!urlInput) return;
@@ -241,9 +261,9 @@
             }
         }
 
-        // Checks for saved time intervals and prompts users
+        // Decides timeline placement based on cookie availability 
         function checkProgressAndLoad(videoId, isInitialLoad) {
-            const savedTime = localStorage.getItem(`yt_progress_${videoId}`);
+            const savedTime = getCookie(`yt_cookie_${videoId}`);
             let startAt = 0;
 
             if (savedTime && parseInt(savedTime) > 5) {
@@ -256,11 +276,12 @@
                 if (resumeConfirm) {
                     startAt = parseInt(savedTime);
                 } else {
-                    localStorage.removeItem(`yt_progress_${videoId}`);
+                    // Erase cookie tracking string if a clean sequence layout is preferred
+                    setCookie(`yt_cookie_${videoId}`, "", -1);
                 }
             }
 
-            // Destroys the old player frame component safely to clean resources
+            // Unmount previous tracking frames safely before launching a clean instance
             if (!isInitialLoad && player && typeof player.destroy === 'function') {
                 player.destroy();
             }
@@ -268,7 +289,7 @@
             createPlayer(videoId, startAt);
         }
 
-        // 'Enter' key submit listener
+        // Register action triggers upon hitting 'Enter'
         document.getElementById('videoUrl').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 loadVideo();
