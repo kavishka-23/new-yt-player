@@ -84,7 +84,7 @@
     overlay.innerHTML = `
         <div class="fiesta-stage-container">
             <img class="fiesta-animation-asset" 
-                 src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3N5YmN5ZzZicnRyN3F4N3ZkMHJ4ajI2Ym9oNjQ3bXJ1cGtoenRxaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L330Y6YwVcoMsnMshV/giphy.gif" 
+                 src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3N5YmN5ZzZicnRyN3F4N3ZkMHJ4ajI2Ym9oNjQ3bXJ1cGtoenRxaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L330Y6YwVcoMsnMshV/giphy.webp" 
                  alt="Dia de los Muertos Live Band Animation">
             <div class="stage-neon-floor"></div>
         </div>
