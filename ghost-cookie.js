@@ -1,103 +1,101 @@
-// ghost-cookie.js - Vibrant Ghost Privacy Guard & Tracker Link
+// ghost-cookie.js - High Visibility Ghost Guard & Tracker
 (function() {
     const styles = `
         .cookie-popup {
-            position: fixed; bottom: 20px; right: 20px;
-            background: rgba(30, 27, 75, 0.95); backdrop-filter: blur(16px);
-            border: 2px solid #a855f7; padding: 24px; border-radius: 20px;
-            z-index: 100000; width: 340px; box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            font-family: 'Segoe UI', sans-serif; color: #ffffff;
-            display: none; flex-direction: column; gap: 14px; text-align: center;
+            position: fixed !important; bottom: 20px !important; right: 20px !important;
+            background: rgba(30, 27, 75, 0.98) !important; backdrop-filter: blur(16px) !important;
+            border: 2px solid #a855f7 !important; padding: 24px !important; border-radius: 20px !important;
+            z-index: 100000 !important; width: 340px !important; box-shadow: 0 15px 40px rgba(0,0,0,0.6) !important;
+            font-family: 'Segoe UI', sans-serif !important; color: #ffffff !important;
+            display: none; flex-direction: column !important; gap: 14px !important; text-align: center !important;
         }
         .cookie-popup.show { display: flex !important; }
         
-        .cookie-btns { display: flex; gap: 10px; justify-content: center; margin-top: 5px; width: 100%; }
+        .cookie-btns { display: flex !important; gap: 10px !important; justify-content: center !important; margin-top: 5px !important; width: 100% !important; }
         .cookie-btn {
-            flex: 1; padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer;
-            font-size: 13px; font-weight: 600; transition: all 0.2s ease;
+            flex: 1 !important; padding: 10px 16px !important; border-radius: 12px !important; border: none !important; cursor: pointer !important;
+            font-size: 13px !important; font-weight: 600 !important; transition: all 0.2s ease !important;
         }
-        .btn-accept { background: linear-gradient(to right, #9333ea, #4f46e5); color: #fff; }
-        .btn-accept:hover { opacity: 0.95; transform: scale(1.02); }
-        .btn-decline { background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); }
-        .btn-decline:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .btn-accept { background: linear-gradient(to right, #9333ea, #4f46e5) !important; color: #fff !important; }
+        .btn-accept:hover { opacity: 0.95 !important; transform: scale(1.02) !important; }
+        .btn-decline { background: rgba(255,255,255,0.08) !important; color: #cbd5e1 !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+        .btn-decline:hover { background: rgba(255,255,255,0.15) !important; color: #fff !important; }
 
         /* Welcome Back Prompt Layout Styles */
         .resume-modal {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 100001;
+            position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important;
+            background: rgba(15, 23, 42, 0.6) !important; backdrop-filter: blur(8px) !important;
+            display: none; align-items: center !important; justify-content: center !important; z-index: 100001 !important;
         }
         .resume-modal.show { display: flex !important; }
         .resume-box {
-            background: rgba(24, 24, 37, 0.95); backdrop-filter: blur(20px);
-            border: 1px solid rgba(168, 85, 247, 0.3); padding: 32px;
-            border-radius: 24px; text-align: center; color: white; width: 90%; max-width: 440px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 50px rgba(168, 85, 247, 0.2);
-            display: flex; flex-direction: column; align-items: center; gap: 12px;
+            background: #151329 !important;
+            border: 2px solid #a855f7 !important; padding: 32px !important;
+            border-radius: 24px !important; text-align: center !important; color: white !important; width: 90% !important; max-width: 440px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 50px rgba(168, 85, 247, 0.3) !important;
+            display: flex !important; flex-direction: column !important; align-items: center !important; gap: 15px !important;
         }
 
-        /* Fixed High-Visibility Cute CSS Ghost Graphic */
+        /* Fixed High-Visibility Pure CSS Cute Ghost Avatar */
         .ghost-avatar-frame { 
-            height: 90px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            margin-bottom: 5px; 
-            width: 100%;
+            height: 80px !important; 
+            display: flex !important; 
+            justify-content: center !important; 
+            align-items: center !important; 
+            width: 100% !important;
+            margin-bottom: 5px !important;
         }
         .cute-ghost {
-            position: relative; 
-            width: 46px; 
-            height: 58px; 
-            background: #ffffff;
-            border-radius: 24px 24px 0 0; 
-            animation: ghostFloat 2s ease-in-out infinite;
-            filter: drop-shadow(0 8px 16px rgba(168, 85, 247, 0.4));
+            position: relative !important; 
+            width: 46px !important; 
+            height: 56px !important; 
+            background: #ffffff !important;
+            border-radius: 24px 24px 0 0 !important; 
+            animation: ghostFloat 2s ease-in-out infinite !important;
+            filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.7)) !important;
+            display: block !important;
         }
         .ghost-face { 
-            position: absolute; 
-            top: 22px; 
-            left: 12px; 
-            width: 22px; 
-            display: flex; 
-            justify-content: space-between; 
+            position: absolute !important; 
+            top: 22px !important; 
+            left: 11px !important; 
+            width: 24px !important; 
+            display: flex !important; 
+            justify-content: space-between !important; 
         }
         .ghost-eye { 
-            width: 5px; 
-            height: 5px; 
-            background-color: #111827; 
-            border-radius: 50%; 
+            width: 5px !important; 
+            height: 5px !important; 
+            background-color: #1a103c !important; 
+            border-radius: 50% !important; 
         }
         .ghost-smile { 
-            position: absolute; 
-            bottom: -4px; 
-            left: 6px; 
-            width: 10px; 
-            height: 5px; 
-            border-bottom: 2px solid #111827; 
-            border-radius: 0 0 10px 10px; 
+            position: absolute !important; 
+            bottom: -5px !important; 
+            left: 7px !important; 
+            width: 10px !important; 
+            height: 5px !important; 
+            border-bottom: 2px solid #1a103c !important; 
+            border-radius: 0 0 10px 10px !important; 
         }
         .ghost-bottom { 
-            position: absolute; 
-            bottom: -6px; 
-            left: 0; 
-            width: 100%; 
-            display: flex; 
+            position: absolute !important; 
+            bottom: -6px !important; 
+            left: 0 !important; 
+            width: 100% !important; 
+            display: flex !important; 
         }
         .ghost-wave { 
-            flex: 1; 
-            height: 7px; 
-            background: #ffffff; 
-            border-radius: 0 0 50% 50%; 
+            flex: 1 !important; 
+            height: 7px !important; 
+            background: #ffffff !important; 
+            border-radius: 0 0 50% 50% !important; 
         }
-        @keyframes ghostFloat { 
-            0%, 100% { transform: translateY(0); } 
-            50% { transform: translateY(-10px); } 
-        }
+        @keyframes ghostFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         
-        .resume-box h2 { font-size: 22px; font-weight: 700; color: #ffffff; margin-top: 5px; }
-        .resume-box p { color: #cbd5e1; font-size: 15px; margin-bottom: 12px; }
-        .highlight { color: #c084fc; font-weight: 600; }
+        .resume-box h2 { font-size: 24px !important; font-weight: 800 !important; color: #ffffff !important; margin: 0 !important; }
+        .resume-box p { color: #cbd5e1 !important; font-size: 15px !important; margin: 5px 0 12px 0 !important; line-height: 1.5 !important; }
+        .highlight { color: #c084fc !important; font-weight: 700 !important; }
     `;
     const styleSheet = document.createElement("style");
     styleSheet.innerText = styles;
@@ -109,8 +107,8 @@
     cookieContainer.id = "privacyGuardPopup";
     cookieContainer.innerHTML = `
         <div class="ghost-avatar-frame"><div class="cute-ghost"><div class="ghost-face"><div class="ghost-eye"></div><div class="ghost-eye"></div><div class="ghost-smile"></div></div><div class="ghost-bottom"><div class="ghost-wave"></div><div class="ghost-wave"></div><div class="ghost-wave"></div></div></div></div>
-        <h2 style="font-size:18px;">Storage Permission Needed</h2>
-        <p style="font-size:13px; color:#cbd5e1; margin-bottom:10px;">We use browser storage to recall your video playback positions and history features. Is that okay?</p>
+        <h2 style="font-size:18px !important;">Storage Permission Needed</h2>
+        <p style="font-size:13px !important; color:#cbd5e1 !important; margin-bottom:10px !important;">We use browser storage to recall your video playback positions and history features. Is that okay?</p>
         <div class="cookie-btns">
             <button class="cookie-btn btn-decline" id="cookieDeclineBtn">Not Okay</button>
             <button class="cookie-btn btn-accept" id="cookieAcceptBtn">Okay</button>
