@@ -5,186 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recently Played - Smart Class Viewer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body {
-            min-height: 100vh;
-            width: 100vw;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle at top left, #1a103c 0%, #0b0f19 60%, #250945 100%);
-            padding: 40px 20px 40px 90px; /* Leave space for left sidebar */
-            color: #ffffff;
+            padding: 40px 20px 40px 90px; color: #ffffff; overflow-x: hidden;
         }
-
-        /* Glassy Dashboard Container */
         .dashboard-container {
-            width: 100%;
-            max-width: 1200px;
-            background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(168, 85, 247, 0.15);
+            width: 100%; max-width: 1200px; background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 24px; padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
-
         h2 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 30px;
-            letter-spacing: -0.5px;
+            font-size: 28px; font-weight: 800; margin-bottom: 30px;
             background: linear-gradient(to right, #ffffff, #cbd5e1, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
-        .history-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 24px;
-        }
-
+        .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
         .history-card {
-            background: rgba(30, 27, 75, 0.55);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(30, 27, 75, 0.55); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;
         }
-
-        .history-card:hover {
-            transform: translateY(-6px);
-            border-color: #a855f7;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.2);
-        }
-
-        .thumb-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-        }
-
-        .thumb-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .progress-track {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(to right, #9333ea, #4f46e5);
-            width: 0%;
-        }
-
-        .card-details {
-            padding: 18px;
-        }
-
-        .card-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-meta {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-
-        .highlight-time {
-            color: #c084fc;
-            font-weight: 600;
-        }
-
-        .no-history {
-            grid-column: 1 / -1;
-            text-align: center;
-            color: #94a3b8;
-            padding: 60px 0;
-            font-size: 16px;
-        }
-
-        /* Left Floating Sidebar */
-        .app-sidebar {
-            position: fixed;
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            z-index: 99999;
-        }
-
+        .history-card:hover { transform: translateY(-6px); border-color: #a855f7; box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
+        .thumb-wrapper { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .progress-track { position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; background: rgba(255, 255, 255, 0.15); }
+        .progress-bar { height: 100%; background: linear-gradient(to right, #9333ea, #4f46e5); width: 0%; }
+        .card-details { padding: 18px; }
+        .card-title { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 13px; color: #94a3b8; }
+        .highlight-time { color: #c084fc; font-weight: 600; }
+        .no-history { grid-column: 1 / -1; text-align: center; color: #94a3b8; padding: 60px 0; }
+        .app-sidebar { position: fixed; top: 50%; left: 20px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 16px; z-index: 99999; }
         .sidebar-btn {
-            width: 54px;
-            height: 54px;
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 54px; height: 54px; background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease;
         }
-
-        .sidebar-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #a855f7;
-            transform: scale(1.08);
-        }
-
-        .sidebar-btn.active {
-            background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(79, 70, 229, 0.3));
-            border-color: #a855f7;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
-        }
-
-        .sidebar-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: #e2e8f0;
-        }
-
-        .sidebar-btn:hover svg, .sidebar-btn.active svg {
-            fill: #ffffff;
-        }
-
+        .sidebar-btn:hover, .sidebar-btn.active { background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(79, 70, 229, 0.3)); border-color: #a855f7; }
+        .sidebar-btn svg { width: 24px; height: 24px; fill: #e2e8f0; }
+        .sidebar-btn:hover svg, .sidebar-btn.active svg { fill: #ffffff; }
         @media (max-width: 768px) {
-            body { padding: 20px 20px 20px 20px; }
+            body { padding: 20px; }
             .app-sidebar { position: fixed; bottom: 10px; top: auto; left: 50%; transform: translateX(-50%); flex-direction: row; }
         }
     </style>
 </head>
 <body>
-
     <div class="app-sidebar">
         <div class="sidebar-btn" id="sideBtnHome" title="Home">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -193,25 +61,15 @@
             <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
         </div>
     </div>
-
     <div class="dashboard-container">
         <h2>Recently Played Videos</h2>
-        <div class="history-grid" id="historyGrid">
-            </div>
+        <div class="history-grid" id="historyGrid"></div>
     </div>
-
     <script>
-        // Go back to the main player home dashboard page
-        document.getElementById("sideBtnHome").addEventListener("click", () => {
-            window.location.href = "index.html";
-        });
-
-        // Scan history records from browser cookies storage
+        document.getElementById("sideBtnHome").addEventListener("click", () => { window.location.href = "index.html"; });
         function loadHistoryDashboard() {
             const grid = document.getElementById("historyGrid");
-            let htmlContent = "";
-            const historyData = [];
-
+            let htmlContent = ""; const historyData = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key.startsWith("yt_progress_")) {
@@ -220,43 +78,30 @@
                     historyData.push({ videoId, savedSeconds });
                 }
             }
-
             if (historyData.length === 0) {
                 grid.innerHTML = `<div class="no-history">No watch history records found yet.</div>`;
                 return;
             }
-
             historyData.forEach(item => {
                 const mins = Math.floor(item.savedSeconds / 60);
                 const secs = item.savedSeconds % 60;
-                // Progress percentage bar mock calculation base
                 const progressPercent = Math.min((item.savedSeconds / 1200) * 100, 100);
-
                 htmlContent += `
                     <div class="history-card" onclick="resumeVideo('${item.videoId}')">
                         <div class="thumb-wrapper">
-                            <img src="https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg" alt="Thumbnail">
-                            <div class="progress-track">
-                                <div class="progress-bar" style="width: ${progressPercent}%"></div>
-                            </div>
+                            <img src="https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg">
+                            <div class="progress-track"><div class="progress-bar" style="width: ${progressPercent}%"></div></div>
                         </div>
                         <div class="card-details">
                             <div class="card-title">Video ID: ${item.videoId}</div>
                             <div class="card-meta">Stopped at: <span class="highlight-time">${mins}m ${secs}s</span></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
-
             grid.innerHTML = htmlContent;
         }
-
-        // When a user clicks a card, redirect back home and pass the video info via URL parameters
-        function resumeVideo(videoId) {
-            window.location.href = `index.html?resumeVid=${videoId}`;
-        }
-
-        // Run setup instantly on page load
+         Aurora Platform Core Link
+        function resumeVideo(videoId) { window.location.href = `index.html?resumeVid=${videoId}`; }
         loadHistoryDashboard();
     </script>
 </body>
