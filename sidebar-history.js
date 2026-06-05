@@ -1,5 +1,6 @@
-// sidebar-history.js - Smart Router & Title Tracker
+// sidebar-history.js - Clean URL Router with Festive Loading Trigger
 (function() {
+    // 1. Inject Sidebar Styles
     const styles = `
         .app-sidebar { position: fixed; top: 50%; left: 20px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 16px; z-index: 99999; }
         .sidebar-btn {
@@ -13,6 +14,7 @@
     `;
     const styleSheet = document.createElement("style"); styleSheet.innerText = styles; document.head.appendChild(styleSheet);
 
+    // 2. Create Sidebar Elements
     const sidebar = document.createElement("div");
     sidebar.className = "app-sidebar";
     sidebar.innerHTML = `
@@ -21,34 +23,28 @@
     `;
     document.body.appendChild(sidebar);
 
-    document.getElementById("sideBtnHome").addEventListener("click", () => { window.location.href = "index.html"; });
-    document.getElementById("sideBtnRecent").addEventListener("click", () => { window.location.href = "recent.html"; });
-
-    // Smarter Tracker: Loops constantly but only saves when a genuine, non-empty title is visible
-    setInterval(() => {
-        // 1. Get the current video ID from your main app state
-        const currentId = window.currentVideoId;
-        
-        if (currentId) {
-            // 2. Target the main title element from your HTML layout
-            const titleElement = document.querySelector(".video-title") || document.querySelector(".title") || document.querySelector("h2");
-            
-            if (titleElement) {
-                const cleanTitle = titleElement.innerText.trim();
-                
-                // 3. Prevent saving placeholders or empty states
-                if (cleanTitle && cleanTitle !== "Recently Played Videos" && cleanTitle.length > 3) {
-                    const metaData = {
-                        title: cleanTitle,
-                        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    };
-                    localStorage.setItem("yt_meta_" + currentId, JSON.stringify(metaData));
-                }
-            }
+    // 3. Click Listeners linked directly with your Skeleton Fiesta Loading Screen
+    document.getElementById("sideBtnHome").addEventListener("click", () => {
+        if (window.SkeletonFiestaLoader) {
+            window.SkeletonFiestaLoader.show(() => {
+                window.location.href = "index.html";
+            });
+        } else {
+            window.location.href = "index.html";
         }
-    }, 1500);
+    });
 
-    // Auto-inject and play video on home screen initialization
+    document.getElementById("sideBtnRecent").addEventListener("click", () => {
+        if (window.SkeletonFiestaLoader) {
+            window.SkeletonFiestaLoader.show(() => {
+                window.location.href = "recent.html";
+            });
+        } else {
+            window.location.href = "recent.html";
+        }
+    });
+
+    // 4. Catch URL parameters on startup to auto-resume videos
     const urlParams = new URLSearchParams(window.location.search);
     const resumeVidId = urlParams.get('resumeVid');
     if (resumeVidId) {
