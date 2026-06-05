@@ -187,7 +187,7 @@
             historyData.forEach(item => {
                 const mins = Math.floor(item.savedSeconds / 60);
                 const secs = item.savedSeconds % 60;
-                const progressPercent = Math.min((item.savedSeconds / 600) * 100, 100); // Base target timeline indicator
+                const progressPercent = Math.min((item.savedSeconds / 1200) * 100, 100); 
 
                 htmlContent += `
                     <div class="history-card" data-id="${item.videoId}" data-time="${item.savedSeconds}">
@@ -231,11 +231,16 @@
         
         const mainPlayerElement = document.getElementById("videoPlayer");
         if (mainPlayerElement) mainPlayerElement.style.display = "block";
+
+        // NEW: Play video when coming back to home tab
+        if (window.player && typeof window.player.playVideo === 'function') {
+            window.player.playVideo();
+        }
     }
 
     // 6. Hook actions to home and history selections
     document.getElementById("sideBtnHome").addEventListener("click", () => {
-        window.location.href = "https://kavishka-23.github.io/new-yt-player/";
+        switchToHomeView();
     });
 
     document.getElementById("sideBtnRecent").addEventListener("click", () => {
@@ -248,6 +253,11 @@
         if (dashContainer) {
             dashContainer.style.display = "block";
             renderHistoryView();
+        }
+
+        // NEW: Pause video immediately when entering the recent tab!
+        if (window.player && typeof window.player.pauseVideo === 'function') {
+            window.player.pauseVideo();
         }
     });
 })();
