@@ -157,6 +157,18 @@
         targetWrapper.appendChild(dashContainer);
     }
 
+    // Helper to send postMessages directly to the iframe element regardless of object scope
+    function controlBackgroundIframe(action) {
+        const iframe = document.getElementById("videoPlayer");
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage(JSON.stringify({
+                event: 'command',
+                func: action,
+                args: []
+            }), '*');
+        }
+    }
+
     // 4. Track local storage data logs
     function getWatchHistory() {
         const history = [];
@@ -209,7 +221,6 @@
         htmlContent += `</div>`;
         dashContainer.innerHTML = htmlContent;
 
-        // Card Event Listeners to resume video playback immediately
         dashContainer.querySelectorAll(".history-card").forEach(card => {
             card.addEventListener("click", () => {
                 const vId = card.getAttribute("data-id");
@@ -232,10 +243,8 @@
         const mainPlayerElement = document.getElementById("videoPlayer");
         if (mainPlayerElement) mainPlayerElement.style.display = "block";
 
-        // NEW: Play video when coming back to home tab
-        if (window.player && typeof window.player.playVideo === 'function') {
-            window.player.playVideo();
-        }
+        // Force direct Iframe Play
+        controlBackgroundIframe('playVideo');
     }
 
     // 6. Hook actions to home and history selections
@@ -255,9 +264,7 @@
             renderHistoryView();
         }
 
-        // NEW: Pause video immediately when entering the recent tab!
-        if (window.player && typeof window.player.pauseVideo === 'function') {
-            window.player.pauseVideo();
-        }
+        // Force direct Iframe Pause
+        controlBackgroundIframe('pauseVideo');
     });
 })();
