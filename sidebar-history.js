@@ -11,7 +11,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            z-index: 9999;
+            z-index: 99999;
         }
         .sidebar-btn {
             width: 54px;
@@ -52,11 +52,13 @@
         .history-dashboard {
             width: 100%;
             height: 100%;
-            background: #0f172a;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
             padding: 30px;
             overflow-y: auto;
             display: none;
             color: #ffffff;
+            border: 1px solid rgba(168, 85, 247, 0.2);
         }
         .history-dashboard h2 {
             font-size: 24px;
@@ -68,11 +70,11 @@
         }
         .history-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
         }
         .history-card {
-            background: rgba(30, 27, 75, 0.4);
+            background: rgba(30, 27, 75, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             overflow: hidden;
@@ -95,7 +97,6 @@
             height: 100%;
             object-fit: cover;
         }
-        /* Custom Progress Bar Layer on thumbnail */
         .progress-track {
             position: absolute;
             bottom: 0; left: 0; width: 100%;
@@ -133,7 +134,7 @@
     styleSheet.innerText = styles;
     document.head.appendChild(styleSheet);
 
-    // 2. Build and Render the Sidebar Menu
+    // 2. Build and Render the Sidebar Menu Buttons
     const sidebar = document.createElement("div");
     sidebar.className = "app-sidebar";
     sidebar.innerHTML = `
@@ -146,10 +147,9 @@
     `;
     document.body.appendChild(sidebar);
 
-    // 3. Inject the History Dashboard right alongside your original #videoPlayer inside .video-wrapper
+    // 3. Inject the History Dashboard panel right inside the main .video-wrapper
     let dashContainer;
     const targetWrapper = document.querySelector(".video-wrapper");
-    
     if (targetWrapper) {
         dashContainer = document.createElement("div");
         dashContainer.className = "history-dashboard";
@@ -157,7 +157,7 @@
         targetWrapper.appendChild(dashContainer);
     }
 
-    // 4. History Tracking Helper: Scan localStorage for all active saved tokens
+    // 4. Track local storage data logs
     function getWatchHistory() {
         const history = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -171,10 +171,9 @@
         return history;
     }
 
-    // 5. Render History Panel List view dynamically
+    // 5. Render list grid onto screen canvas
     function renderHistoryView() {
         if (!dashContainer) return;
-        
         const historyData = getWatchHistory();
         
         let htmlContent = `
@@ -188,10 +187,7 @@
             historyData.forEach(item => {
                 const mins = Math.floor(item.savedSeconds / 60);
                 const secs = item.savedSeconds % 60;
-                
-                // Approximate completion ratio safely (mock duration tracking benchmark 20 mins)
-                const mockDuration = 1200; 
-                const progressPercent = Math.min((item.savedSeconds / mockDuration) * 100, 100);
+                const progressPercent = Math.min((item.savedSeconds / 600) * 100, 100); // Base target timeline indicator
 
                 htmlContent += `
                     <div class="history-card" data-id="${item.videoId}" data-time="${item.savedSeconds}">
@@ -213,13 +209,12 @@
         htmlContent += `</div>`;
         dashContainer.innerHTML = htmlContent;
 
-        // Click Event Listeners on Dashboard Cards
+        // Card Event Listeners to resume video playback immediately
         dashContainer.querySelectorAll(".history-card").forEach(card => {
             card.addEventListener("click", () => {
                 const vId = card.getAttribute("data-id");
                 const vTime = parseInt(card.getAttribute("data-time"));
                 
-                // Connect back smoothly with your existing main frame global functions safely
                 if (window.executePlayerInit) {
                     window.currentVideoId = vId;
                     switchToHomeView();
@@ -232,13 +227,13 @@
     function switchToHomeView() {
         document.getElementById("sideBtnRecent").classList.remove("active");
         document.getElementById("sideBtnHome").classList.add("active");
-        
         if (dashContainer) dashContainer.style.display = "none";
+        
         const mainPlayerElement = document.getElementById("videoPlayer");
         if (mainPlayerElement) mainPlayerElement.style.display = "block";
     }
 
-    // 6. Navigation Event Hooks
+    // 6. Hook actions to home and history selections
     document.getElementById("sideBtnHome").addEventListener("click", () => {
         window.location.href = "https://kavishka-23.github.io/new-yt-player/";
     });
