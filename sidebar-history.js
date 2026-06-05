@@ -1,4 +1,4 @@
-// sidebar-history.js - Clean URL Router
+// sidebar-history.js - Clean URL Router & History Tracker
 (function() {
     const styles = `
         .app-sidebar { position: fixed; top: 50%; left: 20px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 16px; z-index: 99999; }
@@ -23,6 +23,23 @@
 
     document.getElementById("sideBtnHome").addEventListener("click", () => { window.location.href = "index.html"; });
     document.getElementById("sideBtnRecent").addEventListener("click", () => { window.location.href = "recent.html"; });
+
+    // Background Tracker: Detect video title changes on your player and save meta info
+    setInterval(() => {
+        if (window.currentVideoId) {
+            // Find your main app's video title element (h2 or title class)
+            const titleEl = document.querySelector(".video-title") || document.querySelector("h2");
+            const activeTitle = titleEl ? titleEl.innerText : "Learning Session Video";
+            
+            if (activeTitle && activeTitle !== "Recently Played Videos") {
+                const metaData = {
+                    title: activeTitle,
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                };
+                localStorage.setItem("yt_meta_" + window.currentVideoId, JSON.stringify(metaData));
+            }
+        }
+    }, 2000);
 
     // Catch URL trigger strings on startup to inject video ID into the custom player input
     const urlParams = new URLSearchParams(window.location.search);
