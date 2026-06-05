@@ -1,91 +1,160 @@
-// loading-screen.js - Animated Pixar-Style Halloween Fiesta Loading Screen
+// loading-screen.js - Cinematic Interactive Loading Stage Animation
 (function() {
-    // 1. Inject Glassy Cinematic Stage Styles & Layered Animations
+    // 1. Inject Styles with Complex Keyframe Animations for Winds, Running, Playing, and Dancing
     const styles = `
         .skeleton-loading-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            /* Halloween Atmospheric Gradient Overlay */
-            background: radial-gradient(circle at center, rgba(20, 7, 39, 0.4) 0%, #04050a 100%), 
-                        url('https://lh3.googleusercontent.com/rd-gg-dl/AFfU-fInvNOViUGJN8aeIFns6q7dzGJbTkMtTJZ18FMKKLjAR3lLe9t6uRZ9x5iAE6VFC2snSP8RgP4jF28f5d3MndTV5DC1vepfyPW1rTrobhOETDLy0sGf_Ei7pJclzHvtpzZxQVrFkj8y0j7g51eeTw796FR8jQbXBY71qAcQMAf_u85A5_co92Ld5reve-3kZ1puGM12unTnXkwVX6fIuuuiWTp42saZui-1MeJ5vkVkhYI7z-noBGsF3CZxb8uOoGko1Wr7BO1yzbxPZoKwOWBzx2-8i4ppGoGUQybQBIHHItW0h2Sl1hoBhJbPGP-J42q7khj7vWnpgswTyir5IIt85NrbHfNhaQI82HiEhVBwrR1fgrov7zX2bq4B6lrQxbQvdWj6znamF50tWhYvsMqr1Mf-j_HNmARVFbo81ic85YGjBWfai15TvgjRENg9tzcRK2PHft4amyZMcsemVgSutF6yy8bSA6mvDt1uZAcXQE3Dmjgi8zUmnIYqVKPeeKG7AnzFT7NFJtQC6BajNUijzznej_rd7VEByXecBFfFApEWrQeAoA-hDKwm_c3yf6M9Mohq3QNwlA6iUVBT8CdQ13AJ9z5_H3zFGv8j5K4XcRgI8cU-ggDfz1uMmF2qP6Jj73KRoe_i1NZZfgVLW_sZzDXnwYK3E16aa5Wi-SBXsBumge4YHqu8vnSlMgLtQTLpHEUm9piCbDCDBAes47x9LHZlYyJnPnw-nHTzZLOqgL0o6miwsLXsmJ5CIfJOMBd-czW0H4kCHtR-CLkU2iedP7SZaK7UfF_FSXrar_a_B5v8-Y4UQN33A-8dVql0LO6reniKhxpNvnejSyLr7iIYDZvXFYvjJFVN653axHXcQda0AxkDcFXWpoI0zTap53iTO0LUUY8WU2P0K4jA1dPCxOPt6WkhR1XWT2D7ascVsEeIu2XnQ0a8_BWQZW9vtwP5bTI1Q9aJG8UKXQAMvPTEIDlCyscYapglj11GXbC1x9z96iTK29cRKDnmzH4wOCKp8RWAkekNi2sw96SlWo-nowazWrgzQw-uXL3pbOQdA3LNSxgRQzARLUqMq_XnS8G5WH8LXAq97DcBujgBFBr-ZZbJU-Bb1M5aGpjCCFbFb05c6-oD1at83KlMctBxMfVGq6I7fFivFzJcaxg2Ukw-LUQ9-YRdTxWX1Pvrhv2qiFv5UAMUTP9FNmf0G1e5l5-1W13MQezxGjVTG-3wvA=s1024-rj');
-            background-size: cover;
-            background-position: center;
+            background: radial-gradient(circle at center, #110724 0%, #030408 100%);
             z-index: 999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .skeleton-loading-overlay.active {
+            display: flex;
+        }
+
+        /* --- Live Wind Background Effect --- */
+        .wind-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .wind-stream {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), transparent);
+            height: 2px;
+            border-radius: 50%;
+            animation: blowWind 2s linear infinite;
+        }
+        .wind-stream:nth-child(1) { width: 150px; top: 20%; left: -150px; animation-delay: 0s; }
+        .wind-stream:nth-child(2) { width: 250px; top: 45%; left: -250px; animation-delay: 0.5s; animation-duration: 1.5s; }
+        .wind-stream:nth-child(3) { width: 180px; top: 70%; left: -180px; animation-delay: 1s; animation-duration: 2.2s; }
+
+        @keyframes blowWind {
+            0% { transform: translateX(0) scaleY(1); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateX(calc(100vw + 300px)) scaleY(1.5); opacity: 0; }
+        }
+
+        /* --- Animation Stage Area --- */
+        .animation-stage {
+            position: relative;
+            width: 800px;
+            height: 400px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            border-bottom: 3px solid rgba(168, 85, 247, 0.3);
+            padding-bottom: 20px;
+        }
+
+        /* --- Character Base Setup --- */
+        .character {
+            position: absolute;
+            bottom: 20px;
+            width: 100px;
+            height: 140px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .skeleton-loading-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
+            justify-content: flex-end;
+            transition: all 0.3s ease;
         }
 
-        /* Animated Frame Container simulating a lively dance floor */
-        .fiesta-stage-container {
-            width: 550px;
-            height: 350px;
+        /* --- LEFT CHARACTER: Guitarist --- */
+        .guitarist {
+            left: -150px; /* Start hidden off-screen left */
+            animation: guitaristSequence 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* --- RIGHT CHARACTER: Dancing Couple --- */
+        .dancing-couple {
+            right: -150px; /* Start hidden off-screen right */
+            animation: coupleSequence 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* --- Visual Elements for Avatars (Can be replaced with images later) --- */
+        .avatar-body {
+            width: 70px;
+            height: 110px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
             display: flex;
-            align-items: center;
             justify-content: center;
-            position: relative;
-            margin-bottom: -20px;
-            border-radius: 16px;
-            overflow: hidden;
-            /* Rhythmic camera bobbing/dancing effect */
-            animation: stageRock 2.4s ease-in-out infinite alternate;
+            align-items: center;
         }
 
-        /* Theatrical Neon Spotlight Glow behind text */
-        .stage-neon-floor {
+        /* Built-in high quality SVG elements so it works instantly */
+        .guitar-svg {
+            width: 70px;
+            height: 70px;
+            filter: drop-shadow(0 0 8px #d946ef);
+        }
+        .dance-svg {
+            width: 85px;
+            height: 110px;
+            filter: drop-shadow(0 0 8px #3b82f6);
+        }
+
+        /* --- Performance Status Animations --- */
+        .jamming {
+            animation: rockGuitars 0.4s ease-in-out infinite alternate;
+        }
+        .dancing {
+            animation: salsaDance 0.6s ease-in-out infinite alternate;
+        }
+
+        /* --- Core Sequence Timing Keyframes --- */
+        @keyframes guitaristSequence {
+            0% { left: -150px; transform: scaleX(1); }                /* Offscreen */
+            20% { left: calc(50% - 140px); transform: scaleX(1); }     /* Run to Left-Center position */
+            25% { transform: scaleX(1); }                             /* Face forward/right */
+            80% { left: calc(50% - 140px); transform: scaleX(-1); }    /* Jam finished, flip direction to face left */
+            100% { left: -150px; transform: scaleX(-1); }              /* Run back offscreen left */
+        }
+
+        @keyframes coupleSequence {
+            0% { right: -150px; transform: scaleX(1); }                /* Offscreen */
+            20% { right: calc(50% - 140px); transform: scaleX(1); }    /* Run to Right-Center position */
+            25% { transform: scaleX(1); }                             /* Face forward/left */
+            80% { right: calc(50% - 140px); transform: scaleX(-1); }   /* Dance finished, flip direction to face right */
+            100% { right: -150px; transform: scaleX(-1); }             /* Run back offscreen right */
+        }
+
+        /* Action micro-movements during the middle section */
+        @keyframes rockGuitars {
+            0% { transform: translateY(0) rotate(-5deg); }
+            100% { transform: translateY(-8px) rotate(8deg); }
+        }
+
+        @keyframes salsaDance {
+            0% { transform: translateX(-5px) rotate(-3deg) scale(1.02); }
+            100% { transform: translateX(5px) rotate(3deg) scale(0.98); }
+        }
+
+        /* --- Loading Announcement Title Text --- */
+        .loading-announcement {
             position: absolute;
             bottom: 40px;
-            width: 380px;
-            height: 40px;
-            background: radial-gradient(ellipse, rgba(219, 39, 119, 0.6) 0%, rgba(147, 51, 234, 0) 75%);
-            filter: blur(15px);
-            z-index: 1;
-            animation: spotlightPulse 1.2s ease-in-out infinite alternate;
-        }
-
-        /* Bright Neon Marigold Text Headline */
-        .loading-announcement {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 18px;
-            font-weight: 900;
-            letter-spacing: 5px;
-            color: #fff1f2;
+            font-size: 16px;
             text-transform: uppercase;
-            text-shadow: 0 0 10px #db2777, 0 0 25px #9333ea, 0 0 40px #f59e0b;
-            animation: neonGlowPulse 1.2s ease-in-out infinite alternate;
-            z-index: 2;
-            margin-top: 10px;
+            letter-spacing: 4px;
+            color: #a855f7;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+            animation: pulseText 1.5s ease-in-out infinite alternate;
         }
-
-        /* --- CINEMATIC ANIMATIONS --- */
-        @keyframes stageRock {
-            0% { transform: translateY(0) scale(1) rotate(-1deg); }
-            50% { transform: translateY(-8px) scale(1.02) rotate(0deg); }
-            100% { transform: translateY(0) scale(1) rotate(1deg); }
-        }
-
-        @keyframes spotlightPulse {
-            0% { transform: scaleX(0.8); opacity: 0.4; filter: blur(10px); }
-            100% { transform: scaleX(1.2); opacity: 0.9; filter: blur(18px); }
-        }
-
-        @keyframes neonGlowPulse {
-            0% { opacity: 0.7; transform: scale(0.96); text-shadow: 0 0 8px #db2777, 0 0 15px #9333ea; }
-            100% { opacity: 1; transform: scale(1.04); text-shadow: 0 0 15px #db2777, 0 0 35px #9333ea, 0 0 50px #f59e0b; }
-        }
-
-        @media (max-width: 768px) {
-            .fiesta-stage-container { width: 90vw; height: 50vw; }
-            .loading-announcement { font-size: 14px; letter-spacing: 3px; }
+        @keyframes pulseText {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
         }
     `;
     
@@ -93,27 +162,53 @@
     styleSheet.innerText = styles;
     document.head.appendChild(styleSheet);
 
-    // 2. Build Structural HTML Layout
+    // 2. Build Layered HTML Document Structure
     const overlay = document.createElement("div");
     overlay.className = "skeleton-loading-overlay";
     overlay.id = "skeletonLoaderOverlay";
 
     overlay.innerHTML = `
-        <div class="fiesta-stage-container">
-            <div class="stage-neon-floor"></div>
+        <div class="wind-container">
+            <div class="wind-stream"></div>
+            <div class="wind-stream"></div>
+            <div class="wind-stream"></div>
         </div>
-        <div class="loading-announcement">Tuning the Instruments...</div>
+
+        <div class="animation-stage">
+            
+            <div class="character guitarist">
+                <div class="avatar-body jamming">
+                    <svg class="guitar-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 4L15.3 8.7C15.1 8.5 14.8 8.4 14.5 8.5C14 8.6 13.6 9.1 13.6 9.6C13.6 9.9 13.7 10.1 13.9 10.3L10.3 13.9C10.1 13.7 9.9 13.6 9.6 13.6C9.1 13.6 8.6 14 8.5 14.5C8.4 14.8 8.5 15.1 8.7 15.3L4 20L5 21L9.7 16.3C9.9 16.5 10.2 16.6 10.5 16.5C11 16.4 11.4 16 11.4 15.5C11.4 15.2 11.3 15 11.1 14.8L14.8 11.1C15 11.3 15.2 11.4 15.5 11.4C16 11.4 16.4 11 16.5 10.5C16.6 10.2 16.5 9.9 16.3 9.7L21 5L20 4Z" fill="#e879f9" stroke="#db2777" stroke-width="1.5"/>
+                        <path d="M19 8L16 5" stroke="#f472b6" stroke-width="1.5"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="character dancing-couple">
+                <div class="avatar-body dancing">
+                    <svg class="dance-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="12" r="4" fill="#60a5fa"/>
+                        <circle cx="38" cy="14" r="4" fill="#f472b6"/>
+                        <path d="M22 24C24 20 30 18 34 22C36 24 38 28 42 30M26 24L20 42M34 24L38 46M38 24C35 28 32 32 29 44" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M42 30C40 34 39 40 43 52M36 32C32 36 28 42 25 50" stroke="#f9a8d4" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="loading-announcement">Tuning Stage Setup...</div>
+        </div>
     `;
     document.body.appendChild(overlay);
 
-    // 3. Global Control Hook Interface for your Sidebar Navigation Scripts
+    // 3. Automation Engine Control Hooks Hooked into Navigation Router
     window.SkeletonFiestaLoader = {
         show: function(callback) {
             const el = document.getElementById("skeletonLoaderOverlay");
             if (el) {
-                el.classList.add("active");
-                // Keeps loading overlay visible long enough to enjoy the animation phase
-                if (callback) setTimeout(callback, 2600); 
+                el.classList.add(\"active\");
+                // Holds full execution window so the sequence runs up, plays out, and exits cleanly
+                if (callback) setTimeout(callback, 3500); 
             }
         },
         hide: function() {
