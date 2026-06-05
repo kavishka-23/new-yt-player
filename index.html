@@ -120,184 +120,6 @@
             display: block;
         }
 
-        /* --- Custom Premium Glassmorphic Modal Styles --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-card {
-            background: rgba(30, 27, 75, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 24px;
-            padding: 32px;
-            width: 90%;
-            max-width: 460px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 50px rgba(168, 85, 247, 0.2);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active .modal-card {
-            transform: scale(1);
-        }
-
-        /* --- Cute CSS Ghost Integration Graphic Styles --- */
-        .ghost-avatar-frame {
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .cute-ghost {
-            position: relative;
-            width: 44px;
-            height: 60px;
-            background: #ffffff;
-            border-radius: 22px 22px 0 0;
-            animation: ghostFloatingCycle 2.2s ease-in-out infinite;
-            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
-        }
-
-        .ghost-face {
-            position: absolute;
-            top: 22px;
-            left: 11px;
-            width: 22px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .ghost-eye {
-            width: 5px;
-            height: 5px;
-            background-color: #1e1b4b; /* Matches your indigo card palette background */
-            border-radius: 50%;
-        }
-
-        .ghost-smile {
-            position: absolute;
-            bottom: -3px;
-            left: 6px;
-            width: 10px;
-            height: 5px;
-            border-bottom: 2px solid #1e1b4b;
-            border-radius: 0 0 10px 10px;
-        }
-
-        .ghost-blush {
-            position: absolute;
-            top: 26px;
-            width: 4px;
-            height: 3px;
-            background-color: #ff94b8;
-            border-radius: 50%;
-        }
-        .ghost-blush.left { left: 5px; }
-        .ghost-blush.right { right: 5px; }
-
-        .ghost-bottom {
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 100%;
-            display: flex;
-        }
-
-        .ghost-wave {
-            flex: 1;
-            height: 8px;
-            background: #ffffff;
-            border-radius: 0 0 50% 50%;
-        }
-
-        @keyframes ghostFloatingCycle {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* --- Text styling internals --- */
-        .modal-card h2 {
-            color: #ffffff;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .modal-card p {
-            color: #cbd5e1;
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-
-        .modal-card span.highlight {
-            color: #c084fc;
-            font-weight: 600;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-
-        .modal-btn {
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
-
-        .modal-btn-confirm {
-            background: linear-gradient(to right, #9333ea, #4f46e5);
-            color: white;
-            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
-        }
-
-        .modal-btn-confirm:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-        }
-
-        .modal-btn-cancel {
-            background: rgba(255, 255, 255, 0.08);
-            color: #e2e8f0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-        }
-
         /* Mobile Responsive Adjustments */
         @media (max-width: 768px) {
             body {
@@ -327,7 +149,6 @@
 <body>
 
     <div class="container">
-        
         <div class="header-bar">
             <h1>Smart Class Viewer</h1>
             <div class="input-group">
@@ -335,60 +156,30 @@
                 <button onclick="loadVideo()">Watch</button>
             </div>
         </div>
-
         <div class="video-wrapper">
             <div id="videoPlayer"></div>
-        </div>
-
-    </div>
-
-    <div id="customModal" class="modal-overlay">
-        <div class="modal-card">
-            
-            <div class="ghost-avatar-frame">
-                <div class="cute-ghost">
-                    <div class="ghost-face">
-                        <div class="ghost-eye"></div>
-                        <div class="ghost-eye"></div>
-                        <div class="ghost-smile"></div>
-                    </div>
-                    <div class="ghost-blush left"></div>
-                    <div class="ghost-blush right"></div>
-                    <div class="ghost-bottom">
-                        <div class="ghost-wave"></div>
-                        <div class="ghost-wave"></div>
-                        <div class="ghost-wave"></div>
-                    </div>
-                </div>
-            </div>
-
-            <h2>Welcome Back!</h2>
-            <p>We found saved progress at <span id="savedTimeLabel" class="highlight">0m 0s</span>. Would you like to resume where you left off?</p>
-            <div class="modal-actions">
-                <button id="btnResume" class="modal-btn modal-btn-confirm">Resume Video</button>
-                <button id="btnNew" class="modal-btn modal-btn-cancel">Start Fresh</button>
-            </div>
         </div>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
-
     <script>
         let player;
-        let currentVideoId = 'QDS7Hp-fMqs'; // Initial default placeholder video ID
-        let trackingInterval;
-        let pendingVideoId = '';
-        let pendingIsInitialLoad = false;
+        window.currentVideoId = 'QDS7Hp-fMqs'; // Registered Globally for External System Trackers
 
-        // Standard callback fired immediately when the remote YouTube engine starts up
         function onYouTubeIframeAPIReady() {
-            checkProgressAndLoad(currentVideoId, true);
+            // Let ghost-cookie handle authorization checkpoints first before initializing
+            if (window.initializeProgressScanner) {
+                window.initializeProgressScanner();
+            } else {
+                executePlayerInit(window.currentVideoId, 0);
+            }
         }
 
-        // Instantiates or reinstantiates a clean player tracking system
-        function createPlayer(videoId, startSeconds = 0) {
-            clearInterval(trackingInterval);
-
+        function executePlayerInit(videoId, startAt) {
+            window.currentVideoId = videoId;
+            if (player && typeof player.destroy === 'function') {
+                player.destroy();
+            }
             player = new YT.Player('videoPlayer', {
                 height: '100%',
                 width: '100%',
@@ -396,45 +187,34 @@
                 playerVars: {
                     'autoplay': 1,
                     'playsinline': 1,
-                    'start': startSeconds
+                    'start': startAt,
+                    'enablejsapi': 1
                 },
                 events: {
-                    'onReady': onPlayerReady
+                    'onStateChange': (event) => {
+                        // Pass streaming playback variables straight out to ghost-cookie
+                        if (event.data === YT.PlayerState.PLAYING || event.data === YT.PlayerState.PAUSED) {
+                            const trackData = {
+                                customTrackPing: true,
+                                videoId: window.currentVideoId,
+                                currentTime: player.getCurrentTime(),
+                                duration: player.getDuration()
+                            };
+                            window.postMessage(JSON.stringify(trackData), "*");
+                        }
+                    }
                 }
             });
         }
 
-        function onPlayerReady(event) {
-            startTracking();
-        }
+        // Expose global mapping handlers
+        window.executePlayerInit = executePlayerInit;
 
-        // Saves current timestamp location to localStorage every 500ms
-        function startTracking() {
-            clearInterval(trackingInterval);
-            trackingInterval = setInterval(saveCurrentProgress, 500);
-        }
-
-        function saveCurrentProgress() {
-            if (player && typeof player.getCurrentTime === 'function') {
-                const currentTime = Math.floor(player.getCurrentTime());
-                const duration = player.getDuration ? player.getDuration() : 0;
-                
-                if (currentTime > 2 && (duration === 0 || currentTime < duration - 5)) {
-                    localStorage.setItem(`yt_progress_${currentVideoId}`, currentTime);
-                }
-            }
-        }
-
-        // Forcefully save the exact timestamp right before the browser page unloads or refreshes
-        window.addEventListener('beforeunload', saveCurrentProgress);
-
-        // URL Formatter parser
         function loadVideo() {
             const urlInput = document.getElementById('videoUrl').value.trim();
             if (!urlInput) return;
 
             let videoId = '';
-
             if (urlInput.includes('youtu.be/')) {
                 videoId = urlInput.split('youtu.be/')[1].split(/[?#]/)[0];
             } else if (urlInput.includes('youtube.com/watch')) {
@@ -445,67 +225,24 @@
             }
 
             if (videoId) {
-                // Save progress of the old video before switching over to the new one
-                saveCurrentProgress();
-                currentVideoId = videoId;
-                checkProgressAndLoad(videoId, false);
+                window.currentVideoId = videoId;
+                if (window.checkProgressAndPrompt) {
+                    window.checkProgressAndPrompt(videoId);
+                } else {
+                    executePlayerInit(videoId, 0);
+                }
             } else {
                 alert('Could not parse YouTube Video ID. Please check the URL format.');
             }
         }
 
-        // Decides timeline placement based on data availability
-        function checkProgressAndLoad(videoId, isInitialLoad) {
-            const savedTime = localStorage.getItem(`yt_progress_${videoId}`);
-
-            if (savedTime && parseInt(savedTime) > 5) {
-                const mins = Math.floor(savedTime / 60);
-                const secs = savedTime % 60;
-                
-                pendingVideoId = videoId;
-                pendingIsInitialLoad = isInitialLoad;
-
-                // Open custom glass modal window layout
-                document.getElementById('savedTimeLabel').innerText = `${mins}m ${secs}s`;
-                document.getElementById('customModal').classList.add('active');
-            } else {
-                executePlayerInit(videoId, 0, isInitialLoad);
-            }
-        }
-
-        // Final player engine rendering wrapper
-        function executePlayerInit(videoId, startAt, isInitialLoad) {
-            if (!isInitialLoad && player && typeof player.destroy === 'function') {
-                player.destroy();
-            }
-            createPlayer(videoId, startAt);
-        }
-
-        // --- Custom Modal Button Action Observers ---
-
-        document.getElementById('btnResume').addEventListener('click', () => {
-            const savedTime = localStorage.getItem(`yt_progress_${pendingVideoId}`);
-            document.getElementById('customModal').classList.remove('active');
-            executePlayerInit(pendingVideoId, parseInt(savedTime || 0), pendingIsInitialLoad);
-        });
-
-        document.getElementById('btnNew').addEventListener('click', () => {
-            localStorage.removeItem(`yt_progress_${pendingVideoId}`);
-            document.getElementById('customModal').classList.remove('active');
-            executePlayerInit(pendingVideoId, 0, pendingIsInitialLoad);
-        });
-
-        // Register action triggers upon hitting 'Enter'
         document.getElementById('videoUrl').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                loadVideo();
-            }
+            if (e.key === 'Enter') loadVideo();
         });
     </script>
+    
     <script src="ghost-cookie.js"></script>
+    <script src="loading-screen.js"></script>
     <script src="sidebar-history.js"></script>
-</body>
-</body>
-</body>
 </body>
 </html>
