@@ -81,13 +81,12 @@
     overlay.className = "skeleton-loading-overlay";
     overlay.id = "skeletonLoaderOverlay";
 
-    // Uses an alternate, secure cross-origin streaming URL to guarantee immediate fallback display
+    // Swapped to an unrestricted, open mirror link that works seamlessly on GitHub Pages
     overlay.innerHTML = `
         <div class="fiesta-stage-container">
             <img class="fiesta-animation-asset" 
-                 src="https://i.giphy.com/L330Y6YwVcoMsnMshV.gif" 
-                 alt="Dia de los Muertos Live Band Animation"
-                 onerror="this.src='https://media.giphy.com/media/L330Y6YwVcoMsnMshV/giphy.gif'">
+                 src="https://media1.giphy.com/media/L330Y6YwVcoMsnMshV/giphy.gif" 
+                 alt="Dia de los Muertos Live Band Animation">
             <div class="stage-neon-floor"></div>
         </div>
         <div class="loading-announcement">Tuning the Instruments...</div>
