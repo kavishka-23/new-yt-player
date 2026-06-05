@@ -1,4 +1,4 @@
-// sidebar-history.js - Clean URL Router & History Tracker
+// sidebar-history.js - Smart Router & Title Tracker
 (function() {
     const styles = `
         .app-sidebar { position: fixed; top: 50%; left: 20px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 16px; z-index: 99999; }
@@ -24,24 +24,31 @@
     document.getElementById("sideBtnHome").addEventListener("click", () => { window.location.href = "index.html"; });
     document.getElementById("sideBtnRecent").addEventListener("click", () => { window.location.href = "recent.html"; });
 
-    // Background Tracker: Detect video title changes on your player and save meta info
+    // Smarter Tracker: Loops constantly but only saves when a genuine, non-empty title is visible
     setInterval(() => {
-        if (window.currentVideoId) {
-            // Find your main app's video title element (h2 or title class)
-            const titleEl = document.querySelector(".video-title") || document.querySelector("h2");
-            const activeTitle = titleEl ? titleEl.innerText : "Learning Session Video";
+        // 1. Get the current video ID from your main app state
+        const currentId = window.currentVideoId;
+        
+        if (currentId) {
+            // 2. Target the main title element from your HTML layout
+            const titleElement = document.querySelector(".video-title") || document.querySelector(".title") || document.querySelector("h2");
             
-            if (activeTitle && activeTitle !== "Recently Played Videos") {
-                const metaData = {
-                    title: activeTitle,
-                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                };
-                localStorage.setItem("yt_meta_" + window.currentVideoId, JSON.stringify(metaData));
+            if (titleElement) {
+                const cleanTitle = titleElement.innerText.trim();
+                
+                // 3. Prevent saving placeholders or empty states
+                if (cleanTitle && cleanTitle !== "Recently Played Videos" && cleanTitle.length > 3) {
+                    const metaData = {
+                        title: cleanTitle,
+                        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    };
+                    localStorage.setItem("yt_meta_" + currentId, JSON.stringify(metaData));
+                }
             }
         }
-    }, 2000);
+    }, 1500);
 
-    // Catch URL trigger strings on startup to inject video ID into the custom player input
+    // Auto-inject and play video on home screen initialization
     const urlParams = new URLSearchParams(window.location.search);
     const resumeVidId = urlParams.get('resumeVid');
     if (resumeVidId) {
