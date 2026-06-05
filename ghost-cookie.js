@@ -1,137 +1,171 @@
-// ghost-cookie.js - Completely isolated feature script
+// ghost-cookie.js - Functional Privacy Guard & Progress Tracker
 (function() {
-    // Inject Ghost Styles directly so index.html stays clean
+    // 1. Inject Styles for the Privacy Banner & Welcome Back Modal
     const styles = `
-        .ghost-cookie-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 100000; opacity: 0; pointer-events: none;
-            transition: all 0.5s ease;
+        .cookie-popup {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #1e1b4b; border: 1px solid #4338ca;
+            padding: 20px; border-radius: 16px; z-index: 100000;
+            width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Segoe UI', sans-serif; color: #ffffff;
+            display: none; flex-direction: column; gap: 12px;
         }
-        .ghost-cookie-overlay.center-mode {
-            opacity: 1; pointer-events: auto;
+        .cookie-popup.show { display: flex; }
+        .cookie-header { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .cookie-text { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
+        .cookie-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 5px; }
+        .cookie-btn {
+            padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+            font-size: 13px; font-weight: 600; transition: all 0.2s;
         }
-        .ghost-cookie-box {
-            position: fixed;
-            bottom: 20px; right: -400px;
-            display: flex; align-items: center; gap: 15px;
-            background: rgba(30, 27, 75, 0.85);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 20px; padding: 18px 24px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 30px rgba(168, 85, 247, 0.15);
-            max-width: 380px; z-index: 100001;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .ghost-cookie-box.slide-in { right: 20px; }
-        .ghost-cookie-box.center-lock {
-            position: relative; bottom: auto; right: auto;
-            transform: scale(1.1); margin: 0 auto;
-        }
-        .ghost-cookie-char {
-            position: relative; width: 44px; height: 60px;
-            background: #ffffff; border-radius: 22px 22px 0 0;
-            animation: cookieGhostFloat 2s ease-in-out infinite; flex-shrink: 0;
-            box-shadow: 0 8px 15px rgba(255, 255, 255, 0.1);
-        }
-        .ghost-cookie-face {
-            position: absolute; top: 22px; left: 11px; width: 22px;
-            display: flex; justify-content: space-between;
-        }
-        .ghost-cookie-eye { width: 5px; height: 5px; background: #1e1b4b; border-radius: 50%; }
-        .ghost-cookie-smile {
-            position: absolute; bottom: -3px; left: 6px; width: 10px; height: 5px;
-            border-bottom: 2px solid #1e1b4b; border-radius: 0 0 10px 10px;
-        }
-        .ghost-cookie-blush {
-            position: absolute; top: 26px; width: 4px; height: 3px;
-            background: #ff94b8; border-radius: 50%;
-        }
-        .ghost-cookie-blush.left { left: 5px; }
-        .ghost-cookie-blush.right { right: 5px; }
-        .ghost-cookie-bottom { position: absolute; bottom: -8px; left: 0; width: 100%; display: flex; }
-        .ghost-cookie-wave { flex: 1; height: 8px; background: #ffffff; border-radius: 0 0 50% 50%; }
-        .ghost-cookie-content { display: flex; flex-direction: column; gap: 8px; }
-        .ghost-cookie-content p { color: #cbd5e1; font-size: 14px; margin: 0; line-height: 1.4; }
-        .ghost-cookie-content strong { color: #fff; font-size: 15px; }
-        .ghost-cookie-btns { display: flex; gap: 8px; margin-top: 4px; }
-        .gc-btn {
-            padding: 8px 16px; border: none; border-radius: 8px;
-            font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-        }
-        .gc-btn-ok { background: linear-gradient(to right, #9333ea, #4f46e5); color: white; }
-        .gc-btn-no { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; }
-        .gc-btn-no:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
-        @keyframes cookieGhostFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-    `;
+        .btn-accept { background: #8b5cf6; color: #fff; }
+        .btn-accept:hover { background: #7c3aed; }
+        .btn-decline { background: #312e81; color: #94a3b8; }
+        .btn-decline:hover { background: #3730a3; color: #fff; }
 
-    // Inject styles to head
+        /* Welcome Back Prompt Layout */
+        .resume-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 100001;
+        }
+        .resume-modal.show { display: flex; }
+        .resume-box {
+            background: #181825; border: 1px solid #313244; padding: 30px;
+            border-radius: 20px; text-align: center; color: white; max-width: 400px;
+            font-family: 'Segoe UI', sans-serif; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .resume-box h3 { margin: 15px 0 10px; font-size: 20px; }
+        .resume-box p { font-size: 14px; color: #a6adc8; margin-bottom: 20px; }
+    `;
     const styleSheet = document.createElement("style");
     styleSheet.innerText = styles;
     document.head.appendChild(styleSheet);
 
-    // Create background blocking overlay layer
-    const overlay = document.createElement("div");
-    overlay.className = "ghost-cookie-overlay";
-    document.body.appendChild(overlay);
-
-    // Create the Ghost notification element box
-    const ghostBox = document.createElement("div");
-    ghostBox.className = "ghost-cookie-box";
-    ghostBox.innerHTML = `
-        <div class="ghost-cookie-char">
-            <div class="ghost-cookie-face"><div class="ghost-cookie-eye"></div><div class="ghost-cookie-eye"></div><div class="ghost-cookie-smile"></div></div>
-            <div class="ghost-cookie-blush left"></div><div class="ghost-cookie-blush right"></div>
-            <div class="ghost-cookie-bottom"><div class="ghost-cookie-wave"></div><div class="ghost-cookie-wave"></div><div class="ghost-cookie-wave"></div></div>
+    // 2. Build the DOM structures
+    const cookieContainer = document.createElement("div");
+    cookieContainer.className = "cookie-popup";
+    cookieContainer.id = "privacyGuardPopup";
+    cookieContainer.innerHTML = `
+        <div class="cookie-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#a78bfa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span>Hey there!</span>
         </div>
-        <div class="ghost-cookie-content" id="gcContent">
-            <p><strong>Hey there!</strong></p>
-            <p>I am using your cookies to save your video watch progress. Is that okay?</p>
-            <div class="ghost-cookie-btns">
-                <button class="gc-btn gc-btn-ok" id="gcAccept">Okay</button>
-                <button class="gc-btn gc-btn-no" id="gcReject">Not Okay</button>
+        <div class="cookie-text">I am using your browser local storage to save your video watch progress so you can pick up where you left off. Is that okay?</div>
+        <div class="cookie-btns">
+            <button class="cookie-btn btn-decline" id="cookieDeclineBtn">Not Okay</button>
+            <button class="cookie-btn btn-accept" id="cookieAcceptBtn">Okay</button>
+        </div>
+    `;
+    document.body.appendChild(cookieContainer);
+
+    const resumeModal = document.createElement("div");
+    resumeModal.className = "resume-modal";
+    resumeModal.id = "resumeTrackModal";
+    resumeModal.innerHTML = `
+        <div class="resume-box">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="#8b5cf6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            <h3>Welcome Back!</h3>
+            <p id="resumeModalText">We found saved progress on this video. Would you like to resume?</p>
+            <div class="cookie-btns" style="justify-content: center;">
+                <button class="cookie-btn btn-decline" id="resumeFreshBtn">Start Fresh</button>
+                <button class="cookie-btn btn-accept" id="resumeConfirmBtn">Resume Video</button>
             </div>
         </div>
     `;
-    document.body.appendChild(ghostBox);
+    document.body.appendChild(resumeModal);
 
-    // Slide in the ghost panel slightly after refresh loads
-    setTimeout(() => {
-        ghostBox.classList.add("slide-in");
-    }, 800);
+    // 3. Main Operational Variables & State Guard Checks
+    let trackingPermission = localStorage.getItem("app_cookie_permission");
 
-    // Logic Event Listener: IF CHOSEN OKAY
-    document.getElementById("gcAccept").addEventListener("click", () => {
-        ghostBox.classList.remove("slide-in");
-        setTimeout(() => ghostBox.remove(), 500); // Remove cleanly from UI
+    window.addEventListener("load", () => {
+        // Only show popup if the user has never made a choice before
+        if (trackingPermission === null) {
+            document.getElementById("privacyGuardPopup").classList.add("show");
+        } else if (trackingPermission === "granted") {
+            initializeProgressScanner();
+        }
     });
 
-    // Logic Event Listener: IF CHOSEN NOT OKAY
-    document.getElementById("gcReject").addEventListener("click", () => {
-        // 1. Move ghost box into the dark blurred center overlay frame
-        ghostBox.classList.remove("slide-in");
-        overlay.classList.add("center-mode");
-        ghostBox.classList.add("center-lock");
-        overlay.appendChild(ghostBox);
+    // Accept Permission Choice Action
+    document.getElementById("cookieAcceptBtn").addEventListener("click", () => {
+        localStorage.setItem("app_cookie_permission", "granted");
+        trackingPermission = "granted";
+        document.getElementById("privacyGuardPopup").classList.remove("show");
+        initializeProgressScanner(); // Start saving data immediately!
+    });
 
-        // 2. Say goodbye and switch to a locked text state
-        document.getElementById("gcContent").innerHTML = `
-            <p><strong style="font-size: 18px; color: #f43f5e;">Good bye!</strong></p>
-            <p style="font-size: 15px;">Let's see you next time! 👋</p>
-        `;
+    // Decline Permission Choice Action
+    document.getElementById("cookieDeclineBtn").addEventListener("click", () => {
+        localStorage.setItem("app_cookie_permission", "denied");
+        trackingPermission = "denied";
+        document.getElementById("privacyGuardPopup").classList.remove("show");
+        // Clear out any old traces instantly if they choose no
+        clearAllSavedProgress();
+    });
 
-        // 3. Stop functioning: Block application container visibility entirely
-        const appContainer = document.querySelector(".container");
-        if (appContainer) {
-            appContainer.style.pointerEvents = "none";
-            appContainer.style.filter = "blur(20px)";
-            appContainer.style.opacity = "0.1";
+    function clearAllSavedProgress() {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (key.startsWith("yt_progress_") || key.startsWith("yt_meta_")) {
+                localStorage.removeItem(key);
+            }
         }
+    }
+
+    // 4. Background Active Tracker Core Logic
+    function initializeProgressScanner() {
+        // Regularly check and save timestamps only if permission stays granted
+        setInterval(() => {
+            if (trackingPermission !== "granted" || !window.currentVideoId) return;
+
+            // Target the active custom iframe element
+            const iframe = document.getElementById("videoPlayer");
+            if (iframe && iframe.contentWindow) {
+                // Request current video times safely
+                iframe.contentWindow.postMessage(JSON.stringify({ event: "listening" }), "*");
+            }
+        }, 3000);
+
+        // Catch incoming messages from Youtube iframe structure elements
+        window.addEventListener("message", (event) => {
+            if (trackingPermission !== "granted") return;
+            try {
+                const data = JSON.parse(event.data);
+                if (data.event === "onStateChange" && window.currentVideoId) {
+                    // Capture timestamp intervals
+                    const currentSeconds = Math.floor(data.info.currentTime);
+                    if (currentSeconds > 5) {
+                        localStorage.setItem("yt_progress_" + window.currentVideoId, currentSeconds);
+                    }
+                }
+            } catch (e) {}
+        });
+
+        // Check if current launched URL has a video to prompt resume actions
+        setTimeout(() => {
+            if (window.currentVideoId && trackingPermission === "granted") {
+                const savedTime = localStorage.getItem("yt_progress_" + window.currentVideoId);
+                if (savedTime && parseInt(savedTime) > 5) {
+                    const mins = Math.floor(savedTime / 60);
+                    const secs = savedTime % 60;
+                    document.getElementById("resumeModalText").innerText = `We found saved progress at ${mins}m ${secs}s. Would you like to resume where you left off?`;
+                    document.getElementById("resumeTrackModal").classList.add("show");
+                }
+            }
+        }, 1200);
+    }
+
+    // Modal UI Control Buttons
+    document.getElementById("resumeConfirmBtn").addEventListener("click", () => {
+        const savedTime = localStorage.getItem("yt_progress_" + window.currentVideoId);
+        document.getElementById("resumeTrackModal").classList.remove("show");
+        if (savedTime && window.executePlayerInit) {
+            window.executePlayerInit(window.currentVideoId, parseInt(savedTime));
+        }
+    });
+
+    document.getElementById("resumeFreshBtn").addEventListener("click", () => {
+        document.getElementById("resumeTrackModal").classList.remove("show");
     });
 })();
