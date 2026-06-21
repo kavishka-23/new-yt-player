@@ -36,213 +36,121 @@
             background: rgba(15, 23, 42, 0.45);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
             padding: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(168, 85, 247, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
-        /* Top header elements control bar */
-        .header-bar {
+        /* Top Bar Layout containing Branding and Search Control */
+        .top-bar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
         }
 
-        h1 {
-            font-size: 22px;
-            font-weight: 800;
+        .branding h1 {
+            font-size: 20px;
+            font-weight: 600;
             letter-spacing: -0.5px;
             color: #ffffff;
-            background: linear-gradient(to right, #ffffff, #cbd5e1, #a855f7);
+            background: linear-gradient(to right, #ffffff, #94a3b8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            white-space: nowrap;
         }
 
-        .input-group {
+        /* Input Control Container bar */
+        .search-box {
             display: flex;
-            gap: 10px;
-            flex-grow: 1;
-            max-width: 450px;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 4px 6px 4px 16px;
+            width: 480px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        input {
-            flex-grow: 1;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            border-radius: 12px;
-            padding: 10px 16px;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        input:focus {
+        .search-box:focus-within {
             border-color: #a855f7;
-            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.25);
+            background: rgba(15, 23, 42, 0.8);
         }
 
-        button {
-            background: linear-gradient(to right, #9333ea, #4f46e5);
-            color: white;
+        .search-box input {
+            flex: 1;
+            background: transparent;
             border: none;
-            font-weight: 600;
-            padding: 0 24px;
-            border-radius: 12px;
-            cursor: pointer;
+            outline: none;
+            color: #f8fafc;
             font-size: 14px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
         }
 
-        button:hover {
-            opacity: 0.95;
+        .search-box input::placeholder {
+            color: #64748b;
+        }
+
+        .search-box button {
+            background: #a855f7;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-box button:hover {
+            background: #9333ea;
             transform: translateY(-1px);
         }
 
-        /* Outer container frame for the video element */
-        .video-wrapper {
+        .search-box button:active {
+            transform: translateY(0);
+        }
+
+        /* Player Wrapper displaying 16:9 aspect screen cards */
+        .video-container {
+            position: relative;
             width: 100%;
             height: 100%;
-            background: #000000;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* Initial Placeholder View Card display state layout setup */
+        .placeholder-view {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #64748b;
+            z-index: 2;
+            transition: opacity 0.4s ease;
+        }
+
+        .placeholder-view svg {
+            width: 48px;
+            height: 48px;
+            fill: rgba(255, 255, 255, 0.15);
+            margin-bottom: 4px;
+        }
+
+        .placeholder-view p {
+            font-size: 14px;
+            letter-spacing: 0.2px;
+        }
+
+        /* YouTube Target Element container layer execution hooks */
         #videoPlayer {
+            position: absolute;
             width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        /* Mobile Responsive Adjustments */
-        @media (max-width: 768px) {
-            body {
-                overflow: auto;
-                height: auto;
-            }
-            .container {
-                grid-template-rows: auto auto;
-                height: auto;
-                aspect-ratio: auto;
-                width: 100%;
-                padding: 16px;
-            }
-            .header-bar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .input-group {
-                width: 100%;
-            }
-            .video-wrapper {
-                aspect-ratio: 16 / 9;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="header-bar">
-            <h1>Smart Class Viewer</h1>
-            <div class="input-group">
-                <input type="text" id="videoUrl" placeholder="Paste YouTube Video URL here...">
-                <button onclick="loadVideo()">Watch</button>
-            </div>
-        </div>
-        <div class="video-wrapper">
-            <div id="videoPlayer"></div>
-        </div>
-    </div>
-
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
-        let player;
-        window.currentVideoId = 'QDS7Hp-fMqs'; // Registered Globally for External System Trackers
-
-        function onYouTubeIframeAPIReady() {
-            // Let ghost-cookie handle authorization checkpoints first before initializing
-            if (window.initializeProgressScanner) {
-                window.initializeProgressScanner();
-            } else {
-                executePlayerInit(window.currentVideoId, 0);
-            }
-        }
-
-        function executePlayerInit(videoId, startAt) {
-            window.currentVideoId = videoId;
-            if (player && typeof player.destroy === 'function') {
-                player.destroy();
-            }
-            player = new YT.Player('videoPlayer', {
-                height: '100%',
-                width: '100%',
-                videoId: videoId,
-                playerVars: {
-                    'autoplay': 1,
-                    'playsinline': 1,
-                    'start': startAt,
-                    'enablejsapi': 1
-                },
-                events: {
-                    'onStateChange': (event) => {
-                        // Pass streaming playback variables straight out to ghost-cookie
-                        if (event.data === YT.PlayerState.PLAYING || event.data === YT.PlayerState.PAUSED) {
-                            const trackData = {
-                                customTrackPing: true,
-                                videoId: window.currentVideoId,
-                                currentTime: player.getCurrentTime(),
-                                duration: player.getDuration()
-                            };
-                            window.postMessage(JSON.stringify(trackData), "*");
-                        }
-                    }
-                }
-            });
-        }
-
-        // Expose global mapping handlers
-        window.executePlayerInit = executePlayerInit;
-
-        function loadVideo() {
-            const urlInput = document.getElementById('videoUrl').value.trim();
-            if (!urlInput) return;
-
-            let videoId = '';
-            if (urlInput.includes('youtu.be/')) {
-                videoId = urlInput.split('youtu.be/')[1].split(/[?#]/)[0];
-            } else if (urlInput.includes('youtube.com/watch')) {
-                const urlParams = new URLSearchParams(new URL(urlInput).search);
-                videoId = urlParams.get('v');
-            } else if (urlInput.includes('youtube.com/embed/')) {
-                videoId = urlInput.split('youtube.com/embed/')[1].split(/[?#]/)[0];
-            }
-
-            if (videoId) {
-                window.currentVideoId = videoId;
-                if (window.checkProgressAndPrompt) {
-                    window.checkProgressAndPrompt(videoId);
-                } else {
-                    executePlayerInit(videoId, 0);
-                }
-            } else {
-                alert('Could not parse YouTube Video ID. Please check the URL format.');
-            }
-        }
-
-        document.getElementById('videoUrl').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') loadVideo();
-        });
-    </script>
-    
-    <script src="ghost-cookie.js"></script>
-    <script src="loading-screen.js"></script>
-    <script src="sidebar-history.js"></script>
-</body>
-</html>
