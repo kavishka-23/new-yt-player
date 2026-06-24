@@ -154,3 +154,199 @@
         #videoPlayer {
             position: absolute;
             width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border: none;
+            opacity: 0;
+            z-index: 1;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #videoPlayer.ready {
+            opacity: 1;
+        }
+
+        /* Layout modifications matching standard responsive mobile configurations portrait systems rules */
+        @media (max-width: 960px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+                padding: 16px;
+            }
+            .container {
+                grid-template-rows: auto auto;
+                height: auto;
+                aspect-ratio: auto;
+                width: 100%;
+                padding: 16px;
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .search-box {
+                width: 100%;
+            }
+            .video-container {
+                aspect-ratio: 16 / 9;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="top-bar">
+            <div class="branding">
+                <h1>Smart Class Viewer</h1>
+            </div>
+            <div class="search-box">
+                <input type="text" id="videoUrl" placeholder="Paste YouTube normal video or Live stream link here..." autocomplete="off">
+                <button onclick="loadVideo()">Watch</button>
+            </div>
+        </header>
+
+        <main class="video-container">
+            <div class="placeholder-view" id="placeholderView">
+                <svg viewBox="0 0 24 24">
+                    <path d="M23 12c0 6.075-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1s11 4.925 11 11zm-11 9.5c5.247 0 9.5-4.253 9.5-9.5S17.247 2.5 12 2.5 2.5 6.753 2.5 12s4.253 9.5 9.5 9.5zm-1.5-13l6 3.5-6 3.5v-7z"/>
+                </svg>
+                <p>Waiting for an active session stream broadcast...</p>
+            </div>
+            <div id="videoPlayer"></div>
+        </main>
+    </div>
+
+    <script>
+        let tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        let firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        let player;
+        let progressInterval;
+
+        function onYouTubeIframeAPIReady() {
+            // Core API is initialized and listening on the root level frame hooks.
+        }
+
+        function executePlayerInit(videoId, startSeconds) {
+            document.getElementById('placeholderView').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('placeholderView').style.display = 'none';
+            }, 400);
+
+            if (player) {
+                clearInterval(progressInterval);
+                player.destroy();
+            }
+
+            player = new YT.Player('videoPlayer', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 1,
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'start': startSeconds
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            document.getElementById('videoPlayer').classList.add('ready');
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                startTrackingProgress();
+            } else {
+                clearInterval(progressInterval);
+            }
+        }
+
+        function startTrackingProgress() {
+            progressInterval = setInterval(() => {
+                if (player && player.getCurrentTime) {
+                    const trackingPayload = {
+                        customTrackPing: true,
+                        videoId: window.currentVideoId,
+                        currentTime: player.getCurrentTime(),
+                        duration: player.getDuration() || 0
+                    };
+                    window.postMessage(JSON.stringify(trackingPayload), "*");
+                }
+            }, 1000);
+        }
+
+        // Global Execution router interface handlers
+        window.executePlayerInit = executePlayerInit;
+
+        function loadVideo() {
+            const urlInput = document.getElementById('videoUrl').value.trim();
+            if (!urlInput) return;
+
+            let videoId = '';
+            if (urlInput.includes('youtu.be/')) {
+                videoId = urlInput.split('youtu.be/')[1].split(/[?#]/)[0];
+            } else if (urlInput.includes('youtube.com/watch')) {
+                try {
+                    const urlParams = new URLSearchParams(new URL(urlInput).search);
+                    videoId = urlParams.get('v');
+                } catch(e) {
+                    // Fallback manual parse if URL validation errors strike
+                    const match = urlInput.match(/[?&]v=([^&#]*)/);
+                    if (match) videoId = match[1];
+                }
+            } else if (urlInput.includes('youtube.com/embed/')) {
+                videoId = urlInput.split('youtube.com/embed/')[1].split(/[?#]/)[0];
+            } else if (urlInput.includes('youtube.com/live/')) {
+                videoId = urlInput.split('youtube.com/live/')[1].split(/[?#]/)[0];
+            }
+
+            if (videoId) {
+                window.currentVideoId = videoId;
+                if (window.checkProgressAndPrompt) {
+                    window.checkProgressAndPrompt(videoId);
+                } else {
+                    executePlayerInit(videoId, 0);
+                }
+            } else {
+                alert('Could not parse YouTube Video ID. Please check the URL format (Supports normal videos & Live streams).');
+            }
+        }
+
+        document.getElementById('videoUrl').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') loadVideo();
+        });
+
+        // SAFETY INJECTION: Wires a fallback system if loading-screen framework parameters throw anomalies
+        window.addEventListener('DOMContentLoaded', () => {
+            if(!window.SkeletonFiestaLoader) {
+                window.SkeletonFiestaLoader = { show: (cb) => cb(), hide: () => {} };
+            }
+        });
+    </script>
+    
+    <script>
+        function safelyInjectScript(src) {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onerror = () => console.warn(`Script failed to load safely: ${src}`);
+            document.body.appendChild(s);
+        }
+        safelyInjectScript("ghost-cookie.js");
+        safelyInjectScript("loading-screen.js");
+        safelyInjectScript("sidebar-history.js");
+    </script>
+</body>
+</html>
